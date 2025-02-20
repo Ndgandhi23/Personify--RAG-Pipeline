@@ -1,0 +1,294 @@
+@import url("https://fonts.googleapis.com/css2?family=Spline Sans:wght@300;400;500;600;700;800;900&display=swap");
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Spline Sans';
+}
+
+.integration{
+  border: 2px solid black;
+  border-radius: 0px;
+  width: max-content;
+}
+
+.nav {
+  background-color: black;
+  padding: 1rem 2rem;
+  font-size: 20px;
+}
+
+.personify{
+  font-size: 20px;
+  display: block;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-between {
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.spline {
+  font-family: 'Spline Sans';
+}
+
+.fs-2rem {
+  font-size: 2rem;
+}
+
+.white {
+  color: white;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.gap-x-2rem {
+  column-gap: 2rem;
+}
+
+.nav-email {
+  border-radius: 5rem;
+  background-color: white;
+  color: black;
+  padding: 0.5rem 1.5rem;
+}
+
+/* Container styling */
+.container {
+  width: 850px;
+  height: 565px;
+  position: relative;
+  overflow: hidden;
+  margin: auto;
+  padding: 10px;
+}
+
+.relative{
+  position: relative;
+}
+
+.absolute{
+  position: absolute;
+}
+
+.text-center{
+  text-align: center;
+}
+
+/* Form box base styles */
+.form-box {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  padding: 40px;
+  transition: all 0.5s ease;
+}
+
+/* Login form specific */
+.form-box.login {
+  right: 0;
+  z-index: 2;
+  background: white;
+  height: 100%;
+}
+
+/* Register form specific */
+.form-box.register {
+  right: 0;
+  z-index: 1;
+  background: white;
+  transform: translateX(100%);
+  height: 100%
+}
+
+.full-width{
+  width: 100%;
+}
+
+.moore{
+  color: #333;
+}
+
+.container h1{
+  font-size: 36px;
+  margin: -10px 0;
+}
+
+.input-box{
+  margin: 30px 0;
+  width: 100%;
+}
+
+.blue{
+  background-color:rgb(173, 201, 233);
+}
+
+.red{
+  background-color:rgb(233, 176, 173);
+}
+
+.border-rad{
+  border-radius: 8px;
+}
+
+.input-box input{
+  padding: 13px;
+  background: #eee;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 500;
+  width: 84%;
+}
+
+.input-box input:placeholder{
+  color: #888;
+  font-weight: 400;
+}
+
+.forgot-link{
+  margin: -15px 0 15px;
+}
+
+.btn{
+  width: 90%;
+}
+
+.forgot-link a{
+  font-size: 14.5px;
+  text-decoration: none;
+}
+
+.btn{
+  height: 48px;
+  background #7494ec;
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600; 
+}
+
+.container p{
+  font-size: 14.5px;
+  margin: 15px 0;
+}
+
+.social-icons a{
+  display: inline-flex;
+  padding: 10px;
+  border: 2px solid #ccc;
+  font-size: 24px;
+  text-decoration: none;
+  margin: 0 8px; 
+}
+
+/* Toggle box styling */
+.toggle-box {
+  position: absolute;
+  left: 0;
+  width: 40.8%;
+  height: 100%;
+  background: #7494ec;
+  z-index: 3;
+  transition: transform 0.5s ease;
+}
+
+/* Toggle panels */
+.toggle-panel {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  padding: 0 30px;
+  color: white;
+  text-align: center;
+}
+
+.toggle-panel.toggle-left {
+  left: 0;
+}
+
+.toggle-panel.toggle-right {
+  right: 0;
+}
+
+//Toggling behavior
+.container.active .toggle-box {
+  transform: translateX(100%);
+}
+
+.container.active .form-box.login {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.container.active .form-box.register {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.full-height{
+  height: 100%;
+}
+
+.toggle-panel{
+  color: #fff;
+  z-index: 2;
+  position: relative; /* Add relative positioning */
+}
+
+.justify-center{
+  justify-content: center;
+}
+
+.align-center{
+  align-items: center;
+}
+
+.toggle-panel p{
+  margin-bottom: 20px;
+  z-index: 2;
+}
+
+.toggle-panel btn{
+  width: 160px;
+  height: 46px;
+  background: transparent;
+  border: 2px solid #fff;
+  box-shadow: none;
+}
+
+.toggle-box::before{
+  content: '';
+  position: absolute;
+  left: -250%;
+  width: 300%;
+  // Referencing the full-height style to retrieve the height
+  // with a default val of 100%.
+  height: var(--full-height, 100%);
+  z-index: 0; /* Lower z-index than panel content */
+  border-radius: 150px;
+  background: #7494ec;
+}
+
+.toggle-panel.toggle-right{
+  right: 0; /* Changed from -50% to 0 */
+  position: absolute;
+}

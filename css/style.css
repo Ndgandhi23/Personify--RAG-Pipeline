@@ -1,0 +1,188 @@
+html {
+    font-size: 62.5%;
+}
+
+body {
+    margin: 0;
+}
+
+.nav {
+    background-color: black;
+    padding: 1rem 2rem;
+}
+
+.spline {
+    font-family: 'Spline Sans';
+}
+
+.white {
+    color: white;
+}
+
+.flex {
+    display: flex;
+}
+
+.grid {
+    display: grid;
+}
+
+.none {
+    display: none;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.m-0 {
+    margin: 0;
+}
+
+.mb-1rem {
+    margin-bottom: 1rem;
+}
+
+.mt-1rem {
+    margin-top: 1rem;
+}
+
+.mt-3rem {
+    margin-top: 3rem;
+}
+
+.p-1rem {
+    padding: 1rem;
+}
+
+.p-5rem {
+    padding: 5rem;
+}
+
+.content-between {
+    justify-content: space-between;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.content-center {
+    justify-content: center;
+}
+
+.align-self-start {
+    align-self: start;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.select-none {
+    user-select: none;
+}
+
+.fs-2rem {
+    font-size: 2rem;
+}
+
+.fs-3rem {
+    font-size: 3rem;
+}
+
+.gap-x-2rem {
+    column-gap: 2rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.nav-email {
+    border-radius: 5rem;
+    background-color: white;
+    color: black;
+    padding: 0.5rem 1.5rem;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+.new-btn, .confirm-btn {
+    padding: 0.5rem 1.5rem;
+    background-color: rgb(114, 54, 218);
+    color: white;
+    border-radius: 5rem;
+    width: min-content;
+    font-size: 2rem;
+    white-space: nowrap;
+    transition: 100ms;
+    cursor: pointer;
+}
+
+.add-error {
+    padding: 0.5rem 1.5rem;
+    background-color: rgb(241, 39, 39);
+    color: white;
+    border-radius: 5rem;
+    width: min-content;
+    font-size: 2rem;
+    white-space: nowrap;
+    transition: 100ms;
+}
+
+.new-btn:hover, .confirm-btn:hover {
+    background-color: rgb(239, 201, 12);
+}
+
+.new-input-wrapper {
+    width: 50%;
+}
+
+.input-field, .status-dropdown {
+    padding: 0.7rem 1.5rem;
+    font-size: 2rem;
+    border-radius: 3rem;
+    border: 2px solid black;
+    margin: 0.5rem;
+    outline: none;
+    background-color: white;
+}
+
+.application-grid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    /* row-gap: 0.5rem; */
+    width: min-content;
+    align-items: stretch;
+}
+
+.application-grid > div {
+    padding: 1rem 10rem 1rem 3rem;
+    display: flex;
+    align-items: center;
+}
+
+.application-grid > div:nth-child(1n) {
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.application-grid > div:nth-child(4n) {
+    padding-right: 3rem;
+    padding-left: 2rem !important;
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-size: 1.8rem;
+}
+
+.application-grid > div:nth-child(4n) > div {
+    width: 100%;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+
