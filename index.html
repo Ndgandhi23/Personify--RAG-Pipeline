@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="https://fonts.cdnfonts.com/css/spline-sans" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/data.js"></script>
+    <script defer src="js/home.js"></script>
+    <script defer src="js/socket.js"></script>
+</head>
+
+<body>
+
+<div class="body">
+
+    <div class="nav flex content-between spline fs-2rem white items-center">
+
+        <div>Personify</div>
+
+        <div class="flex gap-x-2rem items-center">
+            <div class="nav-email">name@example.com</div>
+            <div class="nav-email"><a href="login.html">Login</a></div>
+        </div>
+        
+    </div>
+
+    <div class="content spline flex flex-col w-full items-center">
+
+        <div class="flex flex-col p-5rem">
+
+            <div class="preview flex content-between select-none">
+                <div class="app-count fs-2rem flex items-center content-center"></div>
+                <div class="new-btn flex items-center content-center">Add App +</div>
+            </div>
+
+            <div class="flex flex-col items-center">
+
+                <div class="new-input-wrapper none mt-3rem">
+                    <div class="fs-2rem text-center">Manually add a job application</div>
+                    <div class="flex flex-col">
+                        <input type="text" placeholder="Date" class="input-field" />
+                        <input type="text" placeholder="Company" class="input-field" />
+                        <input type="email" placeholder="Email" class="input-field" />    
+                        <select class="status-dropdown">
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="interview">Interview</option>
+                            <option value="offer">Offer</option>
+                        </select>
+                    </div>
+
+                    <div class="flex content-center mt-1rem">
+                        <div class="confirm-btn select-none">Confirm</div>
+                    </div>
+
+                    <div class="flex content-center mt-1rem">
+                        <div class="add-error none select-none">Error!</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="application-grid fs-2rem mt-3rem">
+                <div class="underline">Date</div>
+                <div class="underline">Company</div>
+                <div class="underline">Email</div>
+                <div class="underline mb-1rem">Status</div>
+            </div>
+
+        </div>
+
+        
+    </div>
+
+</div>
+
+</body>
+
+</html>

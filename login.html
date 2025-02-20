@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Login page for Personify application">
+    <title>Personify - Login</title>
+    <!-- Add your CSS links here -->
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+    <main>
+    <div class="body">
+        <div class="nav flex content-between spline fs-2rem white items-center">
+            <div class = "personify">Personify</div>
+        </div>
+        <div class="container relative">
+            <div class="form-box login absolute flex items-center ">
+                <form class = "full-width" action="">
+                    <h1>Login</h1>
+                    <div class = "input-box border-rad moore relative">
+                        <input type="text" placeholder="Username" required>
+                    </div>
+                    <div class = "input-box border-rad moore relative">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <div class="forgot-link">
+                        <a class = "moore" href="#">Forgot password?</a>
+                    </div>
+                    <button type = "submit" class = "btn blue border-rad btn">Login</button>
+                    <p>or login with other social platforms</p>
+                    <div class = "social icons flex-col content-between">
+                        <button class = "btn border-rad blue"><a class = "border-rad moore" href="#"><box-icon type='logo' name='google'></box-icon></a> <b>Sign in using Google</b></button>
+                        <button class = "btn border-rad blue"><a class = "border-rad moore" href="#"><box-icon name='linkedin' type='logo' ></box-icon></a> <b>Sign in using Linkedin</b></button>
+                    </div>
+                </form>
+            </div>
+
+            <!---Registration page--->
+            <div class="form-box register moore absolute flex items-center ">
+                <form class = "full-width" action="">
+                    <h1>Register</h1>
+                    <div class = "input-box border-rad moore relative">
+                        <input type="text" placeholder="Username" required>
+                    </div>
+                    <div class = "input-box border-rad moore relative">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class = "input-box border-rad moore relative">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <button type = "submit" class = "border-rad blue btn full-width">Register</button>
+                    <p>or register with other social platforms</p>
+                    <div class = "social icons flex-col content-between">
+                        <button class = "btn border-rad blue"><a class = "border-rad moore" href="#"><box-icon type='logo' name='google'></box-icon></a> <b>Sign in using Google</b></button>
+                        <button class = "btn border-rad blue"><a class = "border-rad moore" href="#"><box-icon name='linkedin' type='logo' ></box-icon></a> <b>Sign in using Linkedin</b></button>
+                    </div>
+                </form>
+            </div>
+            <div class = "toggle-box absolute full-width full-height">
+                <div class="toggle-panel flex-col justify-center align-center absolute full-height half-width toggle-left">
+                    <h1>Hello, Welcome!</h1>
+                    <p>Don't have an account?</p>
+                    <button class = "integration"><b>Register</b></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+
+     <!-- All of my scripts go at the bottom of this page! -->
+    <script src="./js/login.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</body>
+</html>
