@@ -1,6 +1,8 @@
 import flask
 
 from flask import Flask, jsonify, request
+from flask_pymongo import PyMongo
+
 from flask_sock import Sock
 from flask_socketio import SocketIO, emit
 import json
@@ -8,8 +10,26 @@ import data_handling
 from data_handling import application_exists
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
+import logregister
+from dotenv import load_dotenv
+import os
+import schema
 
+#Load environment variables first into memory.
+
+#Flask-PyMongo connection(s)
 app = Flask(__name__) #Create the Flask object
+load_dotenv()
+app.config["MONGO_URI"] = (
+    f"mongodb+srv://{os.getenv('MONGO_USERNAME')}:"
+    f"{os.getenv('MONGO_PASSWORD')}@"
+    f"{os.getenv('MONGO_CLUSTER')}/"
+    f"{os.getenv('MONGO_DATABASE')}"
+    "?retryWrites=true&w=majority"
+)
+mongo = PyMongo(app)
+# Create indexes for app on email + company -> mongo.db.applications.create_index([("email", 1)], unique=True)
+
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 sock = Sock(app) #Setting up the socket object
@@ -23,6 +43,11 @@ users = [
 @app.route('/users', methods=['GET'])
 def get_users():
     return jsonify(users)
+
+@app.route('/indexes', methods=['GET'])
+def get_indexes():
+    indexes = mongo.db.users.index_information()
+    return jsonify(indexes)
 
 #Manually adds job statuses based on company, job, email link, and status 
 @app.route('/jobstatuses', methods=['POST'])
@@ -100,6 +125,74 @@ def add_emails():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route('/login', methods=['POST'])
+def login():
+    if request.is_json:
+        #Get the JSON data from the request
+        data = request.get_json()
+        print(data)
+                
+        # Fetch the document with the email
+        users_collection = mongo.db.users
+        try:
+            user = users_collection.find_one({"email": data.get('your_email')})
+            # If no such document exists, print out invalid user email, no account associated
+            if not user:
+                return jsonify({
+                    "status": "error",
+                    "message": "Couldn't find your Personify account corresponding to your email."
+                }), 404
+            # Get it's password and verify against the currently entered password.
+            verified = logregister.verify_password(data.get('pass'), user["password"])
+            # If not successful, invalid password.
+            if not verified:
+                return jsonify({
+                    "status": "error",
+                    "message": "Invalid password, please try again."
+                }), 403
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": f"Error connecting to database, check that out!"
+            }), 500
+        #If everything goes well at the end, successful login.
+        return jsonify({"message": "Success messsage"}), 200
+    else:
+        return jsonify({"error": "Request must be JSON"}), 400
+
+@app.route('/registration', methods=['POST'])
+def registration():
+    if request.is_json:
+        #Get the JSON data from the request
+        data = request.get_json()
+        print(data)
+
+        # Performing SHA-256 password hashing.
+        data['pass'] = logregister.hash_password(data.get('pass'))
+        # If user not present, login not successful.
+        users_collection = mongo.db.users
+        user = users_collection.find_one({"email": data.get('your_email')})
+        if user:
+            return jsonify({
+                "status": "error",
+                "message": "Account already exists, please login."
+            }), 404
+        #If everything goes well at the end, successful registration.
+        try:
+            users_collection.insert_one(schema.User(data.get('your_email'), data.get('pass')).to_dict())
+        
+            return jsonify({
+                "status": "success",
+                "message": "Registration successful"
+            }), 200
+            
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": f"Error connecting to database, check that out!"
+            }), 500
+    else:
+        return jsonify({"error": "Request must be JSON"}), 400
 
 #Start the Flask app
 if __name__ == '__main__':

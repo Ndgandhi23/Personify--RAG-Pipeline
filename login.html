@@ -13,12 +13,12 @@
         <div class="nav flex content-between spline fs-2rem white items-center">
             <div class = "personify">Personify</div>
         </div>
-        <div class="container relative">
+        <div class="container relative div-center">
             <div class="form-box login absolute flex items-center ">
-                <form class = "full-width" action="">
+                <form class = "login-form full-width" action="">
                     <h1>Login</h1>
                     <div class = "input-box border-rad moore relative">
-                        <input type="text" placeholder="Username" required>
+                        <input type="email" placeholder="Email" required>
                     </div>
                     <div class = "input-box border-rad moore relative">
                         <input type="password" placeholder="Password" required>
@@ -26,7 +26,7 @@
                     <div class="forgot-link">
                         <a class = "moore" href="#">Forgot password?</a>
                     </div>
-                    <button type = "submit" class = "btn blue border-rad btn">Login</button>
+                    <button type = "submit" class = "login-btn btn blue border-rad btn">Login</button>
                     <p>or login with other social platforms</p>
                     <div class = "social icons flex-col content-between">
                         <button class = "btn border-rad blue"><a class = "border-rad moore" href="#"><box-icon type='logo' name='google'></box-icon></a> <b>Sign in using Google</b></button>
@@ -37,18 +37,25 @@
 
             <!---Registration page--->
             <div class="form-box register moore absolute flex items-center ">
-                <form class = "full-width" action="">
+                <form class = "register-form full-width" action="">
                     <h1>Register</h1>
-                    <div class = "input-box border-rad moore relative">
-                        <input type="text" placeholder="Username" required>
-                    </div>
-                    <div class = "input-box border-rad moore relative">
+                    <div class="password-requirements">
+                        <h4>Password Requirements</h3>
+                        <ul style = "font-size: 12px;">
+                            <li><strong>Minimum length:</strong> 8 characters</li>
+                            <li><strong>Allowed characters:</strong> Letters (A-Z, a-z) and numbers (0-9)</li>
+                            <li><strong>Must include at least ONE special character:</strong> <code>!, @, #, or ?</code></li>
+                            <li><strong>Not allowed:</strong> Two consecutive special characters</li>
+                        </ul>
+                        <p>Make sure your password meets these requirements to proceed with registration.</p>
+                    </div>                    
+                    <div class = "input-box register-box border-rad moore relative">
                         <input type="email" placeholder="Email" required>
                     </div>
-                    <div class = "input-box border-rad moore relative">
+                    <div class = "input-box register-box border-rad moore relative">
                         <input type="password" placeholder="Password" required>
                     </div>
-                    <button type = "submit" class = "border-rad blue btn full-width">Register</button>
+                    <button type="submit" class="register-button btn blue border-rad btn">Register</button>                   
                     <p>or register with other social platforms</p>
                     <div class = "social icons flex-col content-between">
                         <button class = "btn border-rad blue"><a class = "border-rad moore" href="#"><box-icon type='logo' name='google'></box-icon></a> <b>Sign in using Google</b></button>
@@ -60,7 +67,7 @@
                 <div class="toggle-panel flex-col justify-center align-center absolute full-height half-width toggle-left">
                     <h1>Hello, Welcome!</h1>
                     <p>Don't have an account?</p>
-                    <button class = "integration"><b>Register</b></button>
+                    <button class = "register-btn btn blue border-rad btn"><b>Register</b></button>
                 </div>
             </div>
         </div>
@@ -68,7 +75,8 @@
     </main>
 
      <!-- All of my scripts go at the bottom of this page! -->
-    <script src="./js/login.js"></script>
-    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+     <script src="js/login.js"></script>
+     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 </body>
 </html>
