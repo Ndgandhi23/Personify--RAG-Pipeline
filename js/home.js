@@ -1,3 +1,25 @@
+//Fetch the email from the url request to access the home page + populate it + store it for other pages.
+document.addEventListener('DOMContentLoaded', () => {
+    //Get email from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    if (!email && !localStorage.getItem('userEmail')) {
+        //Redirect to login if no email found in URL or localStorage
+        window.location.href = '/login.html';
+        return;
+    }
+    //If email exists in URL, update localStorage
+    if (email) {
+        localStorage.setItem('userEmail', decodeURIComponent(email));
+    }
+    
+    //Display user email in navbar (use URL param or stored email)
+    const userEmailElement = document.querySelector('.account-email .nav-email');
+    if (userEmailElement) {
+        userEmailElement.textContent = email || localStorage.getItem('userEmail');
+    }
+});
+
 function refreshApplicationGrid(data) {
 
     $('.app-count').text(`Viewing ${data.length} applications`)

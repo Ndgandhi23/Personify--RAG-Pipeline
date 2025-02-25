@@ -1,3 +1,4 @@
+#Schemas for the user and application collections in the MongoDB database.
 class User:
     def __init__(self, email, password):
         self.email = email

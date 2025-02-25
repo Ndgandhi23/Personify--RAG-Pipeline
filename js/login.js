@@ -1,6 +1,7 @@
 const registerForm = document.querySelector('.form-box.register');
 const loginForm = document.querySelector('.form-box.login');
 
+//Toggling between the login and register forms through the toggle box on the left,
 function toggleForms() {
     registerForm.classList.toggle('active');
     loginForm.classList.toggle('active');
@@ -13,6 +14,7 @@ document.querySelectorAll('.toggle-panel button').forEach(button => {
 });
 
 
+//Logic for rendering the right content in the toggle box when toggling.
 let click = 0 //Switching between login and register message in toggle box.
 const togglePanel = {
     1: {
@@ -29,6 +31,7 @@ const togglePanel = {
 
 const togglePanelEl = document.querySelector('.toggle-panel');
 const button = document.querySelector('.toggle-panel button');
+
 //Set an event listener for the button to change the content when rendering.
 button.addEventListener('click', () => {
     if (click == 0){
@@ -51,48 +54,23 @@ button.addEventListener('click', () => {
     }, 500);
 })
 
-//Retrieve login input fields.
-const usernameField = document.querySelector('.login-form input[type="email"]');
-const passwordField = document.querySelector('.login-form input[type="password"]');
-
-//Retrieve register input fields.
-const emailField = document.querySelector('.register-form input[type="email"]');
-const passField = document.querySelector('.register-form input[type="password"]');
-
-//Get the login and register pages for error handling.
-const loginPage = document.querySelector('.login-form');
-const loginBtn = document.querySelector('.login-btn');
-const registerPage = document.querySelector('.register-form');
-const registerBtn = document.querySelector('.register-button');
-
-const isValidEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.(com)$/;
-    return emailRegex.test(email);
-}
-
-const isValidPassword = (password) => {
-    const passwordRegex = /^(?=.*[!@#?])(?!.*[!@#?]{2})[a-zA-Z0-9!@#?]{8,128}$/;
-    return passwordRegex.test(password);
-}
-
-// Add cooldown tracking at the top of file
+//Add cooldown tracking at the top of file
 let lastMessageTime = 0;
-const COOLDOWN_PERIOD = 10000; // 10 seconds in milliseconds
+const COOLDOWN_PERIOD = 10000; //10 seconds in milliseconds
 
 //Function that displays a message in the login system.
 const displayMessage = (container, message, type = 'error') => {
 // Check if enough time has passed since last message
     const currentTime = Date.now();
     if (currentTime - lastMessageTime < COOLDOWN_PERIOD) {
-        console.log('Message cooldown in effect. Please wait.');
         return;
     }
 
-    // Remove any existing messages first
+    //Remove any existing messages first
     const existingMessages = container.querySelectorAll('.message');
     existingMessages.forEach(msg => msg.remove());
 
-    // Create and style new message
+    //Create and style new message
     const messageElement = document.createElement('p');
     messageElement.className = `message ${type}`;
     messageElement.style.cssText = `
@@ -109,7 +87,7 @@ const displayMessage = (container, message, type = 'error') => {
     container.insertBefore(messageElement, container.children[5]);
     lastMessageTime = currentTime;
 
-    // Auto-remove after 5 seconds
+    //Auto-remove after 5 seconds
     setTimeout(() => {
         messageElement.style.opacity = '0';
         setTimeout(() => {
@@ -117,6 +95,33 @@ const displayMessage = (container, message, type = 'error') => {
         }, 500);
     }, 5000);
 }
+
+const isValidEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.(com)$/;
+    return emailRegex.test(email);
+}
+
+const isValidPassword = (password) => {
+    const passwordRegex = /^(?=.*[!@#?])(?!.*[!@#?]{2})[a-zA-Z0-9!@#?]{8,128}$/;
+    return passwordRegex.test(password);
+}
+
+//Function redirecting to the home page after successful login.
+const redirectToHome = (email) => {
+    // Encode email to safely pass in URL
+    const encodedEmail = encodeURIComponent(email);
+    window.location.href = `/home.html?email=${encodedEmail}`;
+}
+
+//Get the login and register pages for error handling.
+const loginPage = document.querySelector('.login-form');
+const loginBtn = document.querySelector('.login-btn');
+const registerPage = document.querySelector('.register-form');
+const registerBtn = document.querySelector('.register-button');
+
+//Retrieve login input fields.
+const usernameField = loginPage.querySelector('input[type="email"]');
+const passwordField = loginPage.querySelector('input[type="password"]');
 
 //Functionality for login and register.
 const handleLogin = () => {
@@ -148,6 +153,11 @@ const handleLogin = () => {
             // Check for successful HTTP status codes (200-299)
             if (xhr.status >= 200 && xhr.status < 300) {
                 //Redirect to home page after successful login!
+                displayMessage(loginPage, 'Login successful!', 'success');
+                // Add slight delay to show success message before redirect
+                setTimeout(() => {
+                    redirectToHome(email);
+                }, 1500);
             }
         },
         error: function(xhr, status, error) {
@@ -164,6 +174,9 @@ const handleLogin = () => {
     });
 }
 
+//Retrieve register input fields.
+const emailField = registerPage.querySelector('input[type="email"]');
+const passField = registerPage.querySelector('input[type="password"]');
 
 const handleRegistration = () => {
     //Retrieve username, email, and password.
@@ -198,6 +211,10 @@ const handleRegistration = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 displayMessage(registerPage, 'Registration successful, you are now a Personify user!', 'success');
                 //Redirect to home page after successful registration!
+                displayMessage(registerPage, 'Registration successful!', 'success');
+                setTimeout(() => {
+                    redirectToHome(email);
+                }, 1500);
             }
         },
         error: function(xhr, status, error) {
@@ -216,7 +233,7 @@ const handleRegistration = () => {
 // Setting up event listeners for the login and register buttons, preventing a full page reload
 // for form submissions.
 loginBtn.addEventListener('click', (e) => handleLogin(e));
-document.querySelector('.login-form').addEventListener('submit', (e) => e.preventDefault());
+loginPage.addEventListener('submit', (e) => e.preventDefault());
 
 registerBtn.addEventListener('click', (e) => handleRegistration(e));
-document.querySelector('.register-form').addEventListener('submit', (e) => e.preventDefault());
+registerPage.addEventListener('submit', (e) => e.preventDefault());

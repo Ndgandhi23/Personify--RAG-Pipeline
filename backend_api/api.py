@@ -7,7 +7,7 @@ from flask_sock import Sock
 from flask_socketio import SocketIO, emit
 import json
 import data_handling
-from data_handling import application_exists
+from data_handling import application_exists #Our file for our application handling logic.
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import logregister
@@ -133,8 +133,8 @@ def login():
         print(data)
                 
         # Fetch the document with the email
-        users_collection = mongo.db.users
         try:
+            users_collection = mongo.db.users
             user = users_collection.find_one({"email": data.get('your_email')})
             # If no such document exists, print out invalid user email, no account associated
             if not user:
@@ -170,15 +170,15 @@ def registration():
         # Performing SHA-256 password hashing.
         data['pass'] = logregister.hash_password(data.get('pass'))
         # If user not present, login not successful.
-        users_collection = mongo.db.users
-        user = users_collection.find_one({"email": data.get('your_email')})
-        if user:
-            return jsonify({
-                "status": "error",
-                "message": "Account already exists, please login."
-            }), 404
-        #If everything goes well at the end, successful registration.
         try:
+            users_collection = mongo.db.users
+            user = users_collection.find_one({"email": data.get('your_email')})
+            if user:
+                return jsonify({
+                    "status": "error",
+                    "message": "Account already exists, please login."
+                }), 404
+            #If everything goes well at the end, successful registration.
             users_collection.insert_one(schema.User(data.get('your_email'), data.get('pass')).to_dict())
         
             return jsonify({

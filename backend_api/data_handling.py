@@ -1,4 +1,3 @@
-#Input: Company, job name, user applications object
 def application_exists(company, applicationsObj):
     #For each application in the applicationsObj
     for i in range(len(applicationsObj)):
