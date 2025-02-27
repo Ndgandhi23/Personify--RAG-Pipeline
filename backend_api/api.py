@@ -14,6 +14,7 @@ import logregister
 from dotenv import load_dotenv
 import os
 import schema
+import traceback
 
 #Load environment variables first into memory.
 
@@ -39,7 +40,7 @@ users = [
     {"id": 2, "name": "Bob", "email": "bob@example.com"}
 ]
 
-#Dummy API endpoint
+#Dummy API endpoints
 @app.route('/users', methods=['GET'])
 def get_users():
     return jsonify(users)
@@ -194,6 +195,55 @@ def registration():
     else:
         return jsonify({"error": "Request must be JSON"}), 400
 
+
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    if request.is_json:
+        #Get the JSON data from the request
+        data = request.get_json()
+        print(data)
+        try:
+            users_collection = mongo.db.users
+            # If user not present, login not successful.
+            user = users_collection.find_one({"email": data.get('your_email')})
+            if not user:
+                return jsonify({
+                    "status": "error",
+                    "message": "Couldn't find your Personify account corresponding to your email."
+                }), 404
+            # Check to see if the old and new passwords are the same.
+            new_password_hash = logregister.hash_password(data["new_password"])
+            if logregister.verify_password(data["new_password"], user["password"]):
+                return jsonify({
+                    "status": "error",
+                    "message": "That is your current password, please enter a different one."
+                }), 400
+            # Hash the new password
+            # Update the document to be the new password
+            result = users_collection.update_one(
+                {"email": data.get('your_email')},  # Find document by email
+                {"$set": {"password": new_password_hash}}  # Update it's password field
+            )
+            if result.modified_count == 0:
+                return jsonify({
+                    "status": "error",
+                    "message": "Failed to update password."
+                }), 500
+                
+            return jsonify({
+                "status": "success",
+                "message": "Successfully changed your password"
+            }), 200
+            
+        except Exception as e:
+            traceback.print_last()
+            return jsonify({
+                "status": "error",
+                "message": f"Error connecting to database, check that out!"
+            }), 500        
+    else:
+        return jsonify({"error": "Request must be JSON"}), 400
+    
 #Start the Flask app
 if __name__ == '__main__':
     socketio.run(app, debug=True)

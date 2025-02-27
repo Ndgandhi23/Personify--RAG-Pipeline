@@ -1,4 +1,5 @@
 //Fetch the email from the url request to access the home page + populate it + store it for other pages.
+const userEmailElement = document.querySelector('.account-email .nav-email'); //Get the current user's email!
 document.addEventListener('DOMContentLoaded', () => {
     //Get email from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -14,11 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     //Display user email in navbar (use URL param or stored email)
-    const userEmailElement = document.querySelector('.account-email .nav-email');
     if (userEmailElement) {
         userEmailElement.textContent = email || localStorage.getItem('userEmail');
     }
 });
+
+const logoutButton = document.querySelector('.logout-button');
+if (logoutButton){
+
+    logoutButton.addEventListener('click', () => {
+        //Redirect back to the login page.
+        localStorage.removeItem('userEmail'); //Remove before logging out.
+        window.location.href = '/login.html';
+    })
+}else{
+    console.log("Logout button not working.")
+}
 
 function refreshApplicationGrid(data) {
 

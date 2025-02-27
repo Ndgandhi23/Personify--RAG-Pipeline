@@ -68,68 +68,6 @@ body {
   padding: 0.5rem 1.5rem;
 }
 
-/* Container styling */
-.container {
-  width: 850px;
-  height: 565px;
-  position: relative;
-  overflow: hidden;
-  margin: auto;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-}
-
-/* Form box base styles */
-.form-box {
-  width: 50%;
-  height: calc(100% - 20px);  /* Account for container padding */
-  position: absolute;
-  top: 10px;  /* Align with container padding */
-  padding: 20px 40px;
-  transition: all 0.5s ease;
-  overflow-y: scroll;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Login form specific */
-.form-box.login {
-  right: 0;
-  z-index: 2;
-  background: white;
-  height: 100%;
-}
-
-/* Register form specific */
-.form-box.register {
-  right: 10px;  /* Account for container padding */
-  z-index: 1;
-  background: white;
-  transform: translateX(100%);
-  max-height: calc(100% - 20px);  /* Account for container padding */
-  /* Custom scrollbar styling */
-  scrollbar-width: thin;
-  scrollbar-color: #7494ec transparent;
-  overflow-y: auto;
-  overflow-x: hidden; /* Prevent horizontal scroll */
-}
-
-//Styling the scroll bar for register page.
-.form-box.register::-webkit-scrollbar {
-    width: 8px;
-}
-
-.form-box.register::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 10px;
-}
-
-.form-box.register::-webkit-scrollbar-thumb {
-    background-color: #7494ec;
-    border-radius: 10px;
-    border: 2px solid white;
-}
 
 .full-width{
   width: 100%;
@@ -232,6 +170,86 @@ body {
   margin: 0 8px; 
 }
 
+.full-height{
+  height: 100%;
+}
+
+.justify-center{
+  justify-content: center;
+}
+
+.align-center{
+  align-items: center;
+}
+
+.div-center{
+  margin: auto;
+}
+
+/* Container styling */
+.container {
+  width: 850px;
+  height: 565px;
+  position: relative;
+  overflow: hidden;
+  margin: auto;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Form box base styles */
+.form-box {
+  position: absolute;
+  width: 50%;
+  height: calc(100% - 20px);
+  top: 10px;
+  padding: 20px 40px;
+  transition: all 0.5s ease-in-out;
+  background: white;
+}
+
+/* Login form */
+.form-box.login {
+  right: 0;
+  z-index: 2;
+}
+
+/* Register form */
+.form-box.register {
+  right: 0;
+  z-index: 1;
+}
+
+/* Forgot password form */
+.form-box.forgot-password {
+  right: 0;
+  z-index: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #7494ec transparent;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.form-box.active {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 2;  /* Higher than inactive */
+}
+
+/* Initially, login appears first in the log/reg system! */
+.form-box.login {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Inactive states */
+.form-box.active ~ .form-box {
+    transform: translateX(-100%);
+    opacity: 0;
+    z-index: 1;
+}
+
 /* Toggle box styling */
 .toggle-box {
   position: absolute;
@@ -267,38 +285,6 @@ body {
   transform: translateX(100%);
 }
 
-.container.active .form-box.login {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.container.active .form-box.register {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.full-height{
-  height: 100%;
-}
-
-.toggle-panel{
-  color: #fff;
-  z-index: 2;
-  position: relative; /* Add relative positioning */
-}
-
-.justify-center{
-  justify-content: center;
-}
-
-.align-center{
-  align-items: center;
-}
-
-.div-center{
-  margin: auto;
-}
-
 .toggle-panel p{
   margin-bottom: 20px;
   z-index: 2;
@@ -325,19 +311,16 @@ body {
   background: #7494ec;
 }
 
-.toggle-panel.toggle-right{
-  right: 0; /* Changed from -50% to 0 */
-  position: absolute;
-}
-
 /* Adjust content spacing */
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
   height: auto;
-  min-height: 100%;  /* Ensure full height for scrolling */
-  padding-bottom: 60px; /* Add padding at bottom for better scroll experience */
+  max-height: calc(100% - 20px);  /* Account for container padding */
+  scrollbar-width: thin;
+  scrollbar-color: #7494ec transparent;
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Password requirements section */

@@ -1,58 +1,37 @@
 const registerForm = document.querySelector('.form-box.register');
 const loginForm = document.querySelector('.form-box.login');
+const forgotPasswordForm = document.querySelector('.form-box.forgot-password');
 
-//Toggling between the login and register forms through the toggle box on the left,
+//Toggling between the login, register, and forgot-password forms through the toggle box on the left.
 function toggleForms() {
     registerForm.classList.toggle('active');
     loginForm.classList.toggle('active');
+    forgotPasswordForm.classList.toggle('active');
 }
+
+const forgotLink = document.querySelector('.forgot-link')
+forgotLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.classList.remove('active');
+    registerForm.classList.remove('active');
+    forgotPasswordForm.classList.add('active');
+});
 
 document.querySelectorAll('.toggle-panel button').forEach(button => {
     button.addEventListener('click', () => {
-        document.querySelector('.container').classList.toggle('active');
+        const container = document.querySelector('.container');
+        container.classList.toggle('active');
+        
+        //Switching between login and register.
+        if (!forgotPasswordForm.classList.contains('active')) {
+            loginForm.classList.toggle('active');
+            registerForm.classList.toggle('active');
+        }
     });
 });
 
-
-//Logic for rendering the right content in the toggle box when toggling.
-let click = 0 //Switching between login and register message in toggle box.
-const togglePanel = {
-    1: {
-        "Header": "Welcome Back!",
-        "Paragraph": "Already have an account?",
-        "Button Name": "Login"
-    },
-    0:{
-        "Header": "Hello, Welcome!",
-        "Paragraph": "Don't have an account?",
-        "Button Name": "Register"
-    }
-}
-
-const togglePanelEl = document.querySelector('.toggle-panel');
-const button = document.querySelector('.toggle-panel button');
-
-//Set an event listener for the button to change the content when rendering.
-button.addEventListener('click', () => {
-    if (click == 0){
-        click = 1;
-    }else{
-        click = 0;
-    }
-    //Change the corresponding fields with a transition
-    const toggleFields = togglePanel[click];
-    setTimeout(() => {
-        //Getting and retrieving the corresponding fields respectively.
-        let header = togglePanelEl.querySelector("h1");
-        header.innerHTML = toggleFields["Header"];
-
-        let para = togglePanelEl.querySelector("p");
-        para.innerHTML = toggleFields["Paragraph"];
-
-        let buttonName = togglePanelEl.querySelector("button");
-        buttonName.innerHTML = toggleFields["Button Name"];
-    }, 500);
-})
+const forgotPasswordBtn = document.querySelector('.forgot-password-button');
+const forgotPasswordPage = document.querySelector('.forgot-password-form');
 
 //Add cooldown tracking at the top of file
 let lastMessageTime = 0;
@@ -65,7 +44,6 @@ const displayMessage = (container, message, type = 'error') => {
     if (currentTime - lastMessageTime < COOLDOWN_PERIOD) {
         return;
     }
-
     //Remove any existing messages first
     const existingMessages = container.querySelectorAll('.message');
     existingMessages.forEach(msg => msg.remove());
@@ -96,6 +74,7 @@ const displayMessage = (container, message, type = 'error') => {
     }, 5000);
 }
 
+//Regex for validating email and password.
 const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.(com)$/;
     return emailRegex.test(email);
@@ -105,6 +84,106 @@ const isValidPassword = (password) => {
     const passwordRegex = /^(?=.*[!@#?])(?!.*[!@#?]{2})[a-zA-Z0-9!@#?]{8,128}$/;
     return passwordRegex.test(password);
 }
+
+const forgotPassword = (e) => {
+    e.preventDefault(); // Prevent form submission/page reload, which is default behavior at end of submission event listener method.
+    try{
+    // Retrieve email field from the forgot-password form
+    const emailField = forgotPasswordPage.querySelector('input[type="email"]');
+    const newPasswordField = forgotPasswordPage.querySelector('input[type="password"]');
+    //Retrieve email and new password values
+    const newPassword = newPasswordField.value;
+    const email = emailField.value;
+    // Validate email and new password formats
+    if (!isValidEmail(email)) {
+        displayMessage(forgotPasswordPage, 'Please enter a valid email address.', 'error');
+        return;
+    }
+    else if (!isValidPassword(newPassword)) {
+        displayMessage(forgotPasswordPage, 'Please provide a valid new password, as mentioned in the requirements above.', 'error');
+        return;
+    }
+    // Make a post request to the forgot password API endpoint
+    const sensitive_info = { your_email: email, new_password: newPassword };
+    $.ajax({
+        url: 'http://127.0.0.1:5000/forgot-password',
+        type: 'POST',
+        data: JSON.stringify(sensitive_info),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(data, textStatus, xhr) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                displayMessage(forgotPasswordPage, 'Password reset successful!', 'success');
+                // Add slight delay to show success message before redirect
+                setTimeout(() => {
+                    //If successful
+                    forgotPasswordForm.classList.remove('active');
+                    loginForm.classList.add('active');
+                }, 1500);
+            }
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = 'An error occurred during password reset.';
+            if (xhr.responseJSON?.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            displayMessage(forgotPasswordPage, errorMessage, 'error');
+        }
+    });
+    }
+    catch (error){
+        setTimeout(() => {
+            console.error("Message:", error.message);
+            console.error("Line Number:", error.lineNumber);
+        }, 1500);
+    }
+}
+
+forgotPasswordBtn.addEventListener('click', (e) => {forgotPassword(e)}); 
+
+//Logic for rendering the right content in the toggle box when toggling.
+let click = 0 //Switching between login and register message in toggle box.
+const togglePanel = {
+    1: {
+        "Header": "Welcome Back!",
+        "Paragraph": "Already have an account?",
+        "Button Name": "Login"
+    },
+    0:{
+        "Header": "Hello, Welcome!",
+        "Paragraph": "Don't have an account?",
+        "Button Name": "Register"
+    }
+}
+
+const togglePanelEl = document.querySelector('.toggle-panel');
+const button = document.querySelector('.toggle-panel button');
+
+//Set an event listener for the button to change the content when rendering.
+button.addEventListener('click', () => {
+    if (click == 0){
+        click = 1;
+        loginForm.classList.remove('active');
+        registerForm.classList.add('active');
+    }else{
+        click = 0;
+        registerForm.classList.remove('active');
+        loginForm.classList.add('active');
+    }
+    //Change the corresponding fields with a transition
+    const toggleFields = togglePanel[click];
+    setTimeout(() => {
+        //Getting and retrieving the corresponding fields respectively.
+        let header = togglePanelEl.querySelector("h1");
+        header.innerHTML = toggleFields["Header"];
+
+        let para = togglePanelEl.querySelector("p");
+        para.innerHTML = toggleFields["Paragraph"];
+
+        let buttonName = togglePanelEl.querySelector("button");
+        buttonName.innerHTML = toggleFields["Button Name"];
+    }, 500);
+})
 
 //Function redirecting to the home page after successful login.
 const redirectToHome = (email) => {

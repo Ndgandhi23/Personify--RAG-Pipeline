@@ -16,7 +16,7 @@
         <div class="container relative div-center">
             <div class="form-box login absolute flex items-center ">
                 <form class = "login-form full-width" action="">
-                    <h1>Login</h1>
+                    <h2>Login</h2>
                     <div class = "input-box border-rad moore relative">
                         <input type="email" placeholder="Email" required>
                     </div>
@@ -38,7 +38,7 @@
             <!---Registration page--->
             <div class="form-box register moore absolute flex items-center ">
                 <form class = "register-form full-width" action="">
-                    <h1>Register</h1>
+                    <h2>Register</h2>
                     <div class="password-requirements">
                         <h4>Password Requirements</h3>
                         <ul style = "font-size: 12px;">
@@ -63,8 +63,38 @@
                     </div>
                 </form>
             </div>
+
+            <!---Forgot password link--->
+            <div class="form-box forgot-password moore absolute flex items-center ">
+                <form class = "forgot-password-form full-width" action="">
+                    <h2>Forgot Password</h2>
+                    <div class="password-requirements">
+                        <h4>Please ensure that your new password follow the password requirements.</h4>
+                        <h4>Password Requirements</h4>
+                        <ul style = "font-size: 12px;">
+                            <li><strong>Minimum length:</strong> 8 characters</li>
+                            <li><strong>Allowed characters:</strong> Letters (A-Z, a-z) and numbers (0-9)</li>
+                            <li><strong>Must include at least ONE special character:</strong> <code>!, @, #, or ?</code></li>
+                            <li><strong>Not allowed:</strong> 
+                                <ul>
+                                    <li>Two consecutive special characters</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Make sure your password meets these requirements to proceed with updating your password.</p>
+                    </div>                    
+                    <div class = "input-box forgot-password-box border-rad moore relative">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class = "input-box forgot-password-box border-rad moore relative">
+                        <input type="password" placeholder="New Password" required>
+                    </div>
+                    <button type="submit" class="forgot-password-button btn blue border-rad btn">Submit</button>                   
+                </form>
+            </div>
+
             <div class = "toggle-box absolute full-width full-height">
-                <div class="toggle-panel flex-col justify-center align-center absolute full-height half-width toggle-left">
+                <div class="toggle-panel flex-col justify-center align-center absolute full-height half-width">
                     <h1>Hello, Welcome!</h1>
                     <p>Don't have an account?</p>
                     <button class = "register-btn btn blue border-rad btn"><b>Register</b></button>
