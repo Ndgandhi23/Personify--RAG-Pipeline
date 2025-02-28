@@ -21,7 +21,6 @@ document.querySelectorAll('.toggle-panel button').forEach(button => {
     button.addEventListener('click', () => {
         const container = document.querySelector('.container');
         container.classList.toggle('active');
-        
         //Switching between login and register.
         if (!forgotPasswordForm.classList.contains('active')) {
             loginForm.classList.toggle('active');

@@ -236,7 +236,6 @@ def forgot_password():
             }), 200
             
         except Exception as e:
-            traceback.print_last()
             return jsonify({
                 "status": "error",
                 "message": f"Error connecting to database, check that out!"

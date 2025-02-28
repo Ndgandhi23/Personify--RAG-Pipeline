@@ -207,12 +207,16 @@ body {
   padding: 20px 40px;
   transition: all 0.5s ease-in-out;
   background: white;
+  transform: translateX(100%);
+  opacity: 0;
 }
 
 /* Login form */
 .form-box.login {
   right: 0;
   z-index: 2;
+  transform: translateX(0);
+  opacity: 1;
 }
 
 /* Register form */

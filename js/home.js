@@ -1,5 +1,6 @@
 //Fetch the email from the url request to access the home page + populate it + store it for other pages.
 const userEmailElement = document.querySelector('.account-email .nav-email'); //Get the current user's email!
+const logoutButton = document.querySelector('.logout-button');
 document.addEventListener('DOMContentLoaded', () => {
     //Get email from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -18,15 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userEmailElement) {
         userEmailElement.textContent = email || localStorage.getItem('userEmail');
     }
+    if(logoutButton){
+        logoutButton.children[0].textContent = "Logout"
+    }
 });
 
-const logoutButton = document.querySelector('.logout-button');
 if (logoutButton){
 
     logoutButton.addEventListener('click', () => {
         //Redirect back to the login page.
         localStorage.removeItem('userEmail'); //Remove before logging out.
         window.location.href = '/login.html';
+        //PLEASE FIX the below part -> Once you logout, do not go back to home page!
+        history.pushState(null, null, '/home.html');
+        // Listen for the back button or any popstate event.
+        // When that happens, force a redirect to the home page.
+        window.addEventListener('popstate', function(event) {
+            window.location.href = '/home.html';
+        });
     })
 }else{
     console.log("Logout button not working.")
