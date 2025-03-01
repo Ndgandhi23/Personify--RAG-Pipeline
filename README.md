@@ -20,3 +20,11 @@ Now, once the following above works, follow these instructions:
 3. Register for an account with a new username and password
 
 Now you can access the page, yay!
+
+How to clone the project repo:
+1. Go to a new Visual Studio Code window or for wtvr IDE you guys are using.
+2. If you have a Github option under Start, then click on it, and follow it from there.
+3. Otherwise:
+    1. Click on connect to
+    2. Select Open Remote Repository on the drop-down menu in the top.
+    3. Then Select Open Repository from Github
