@@ -6,8 +6,6 @@ from flask_pymongo import PyMongo
 from flask_sock import Sock
 from flask_socketio import SocketIO, emit
 import json
-import data_handling
-from data_handling import application_exists #Our file for our application handling logic.
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import logregister
@@ -31,7 +29,7 @@ app.config["MONGO_URI"] = (
 mongo = PyMongo(app)
 # Create indexes for app on email + company -> mongo.db.applications.create_index([("email", 1)], unique=True)
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5500", "supports_credentials": True}})  # Allow requests from your frontend
 socketio = SocketIO(app, cors_allowed_origins="*")
 sock = Sock(app) #Setting up the socket object
 
@@ -53,50 +51,70 @@ def get_indexes():
 #Manually adds job statuses based on company, job, email link, and status 
 @app.route('/jobstatuses', methods=['POST'])
 def jobstatus_manual():
-    #Check if the request is JSON
     if request.is_json:
-        #Get the JSON data from the request
         data = request.get_json()
         print(data)
 
-        #Extract the parameters from the JSON
+        # Extract the parameters from the JSON
         company = data.get('company')
         date = data.get('date')
-        user_email = 'name@example.com'
+        role = data.get('role')
+        user_email = data.get('user_email')  # This should be dynamically set based on the logged-in user
         company_email = data.get('company_email')
         status = data.get('status')
 
-        #Validate that all required parameters are provided
-        if not company or not date or not status or not company_email:
+        # Validate that all required parameters are provided
+        if not company or not date or not status or not company_email or not role:
             return jsonify({"error": "Missing required parameters"}), 400
-                
-        #Obtain the JSON object from the json file
-        with open('data.json') as f:
-            database = json.load(f)
-            f.close()
-            #If the user does not exist
-            if user_email not in database["users"]:
-                #Add the user into a separate list of dictionaries.
-                database["users"][user_email] = []
-            #If there exists an application for the user with the same company and role name
-            index = application_exists(company, database["users"][user_email])
-            if index != -1:
-                #Update the status and email link using the index for the user
-                database["users"][user_email][index]["status"] = status
-            #Else
-            else:
-                #Insert a new record into the user's list of applications (application = dictionary)
-                new_application = {"date": date, "company": company, "company_email": company_email, "status": status}
-                database["users"][user_email].append(new_application)
-            #Dump it back into the json file
-            new_json_file = json.dumps(database)
-            with open('data.json', 'w') as f:
-                f.write(new_json_file)
-                f.close()
-            return jsonify(database["users"][user_email]), 200
+
+        # Insert the application into MongoDB
+        try:
+            applications_collection = mongo.db.applications
+            applications_collection.update_one(
+                {"user_email": user_email, "company": company, 'role': role},
+                {"$set": {"date": date, "company_email": company_email, "status": status}},
+                upsert=True  # Create a new document if no document matches the query
+            )
+            return jsonify({"success": True, "message": "Application status updated successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
     else:
         return jsonify({"error": "Request must be JSON"}), 400
 
+# New endpoint to process classified email data for job applications
+@app.route('/process_application', methods=['POST'])
+def process_application():
+    if request.is_json:
+        data = request.get_json()
+        print(data)
+
+        # Extract parameters from the JSON
+        user_email = data.get('user_email') 
+        company = data.get('company')
+        role = data.get('role')
+        date = data.get('date')
+        company_email = data.get('company_email')
+        status = data.get('status')
+
+        # Validate that all required parameters are provided
+        if not user_email or not company or not date or not status or not company_email or not role:
+            return jsonify({"error": "Missing required parameters"}), 400
+
+        # Insert the application into MongoDB
+        try:
+            applications_collection = mongo.db.applications
+            
+            #updates application status
+            applications_collection.update_one(
+                {"user_email": user_email, "company": company, "role": role},
+                {"$set": {"date": date, "company_email": company_email, "status": status}},
+                upsert=True  # Create a new document if no document matches the query
+            )
+            return jsonify({"message": "Application processed successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "Request must be JSON"}), 400
 
 email_list = []  # Define global variable at top of file
         

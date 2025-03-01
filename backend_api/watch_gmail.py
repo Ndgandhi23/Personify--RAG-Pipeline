@@ -146,32 +146,33 @@ def fetch_email_by_id(service, msg_id):
     print(f"\n📩 New Email Received!")
     print(f"📌 From: {sender}")
     print(f"📅 Received Date: {formatted_date}")
-    print(f"📌 {content[:500]}")  # Show first 500 characters
+    print(f"📌 {content[:500]}") 
 
     # Classify the email content
     status = classify_email(content)
 
-    # ✅ Create a structured dictionary
+   
     email_data = {
+        "user_email": "name@example.com",  #This should be the email of the logged in user.
         "date": formatted_date,
-        "company": company,  # Placeholder, can be updated with company extraction logic
-        "company-email": sender,
+        "company": company,
+        "company_email": sender,
         "status": status
     }
 
     print("📌 Email Data:", email_data)
 
-    if(company != "not job related"):
-        print("Sending to frontend!")
-        resp = requests.post('http://localhost:8080', json=email_data)
+    if company != "not job related":
+        print("Sending to process_application endpoint!")
+        resp = requests.post('http://localhost:5000/process_application', json=email_data)
         if resp.ok:
-            print(f"Emails successfully sent to Flask")
+            print(f"Application successfully processed: {resp.json()}")
         else:
-            print(f'[Error] Received {resp.status_code} when sending to localhost (flask)')
+            print(f'[Error] Received {resp.status_code} when sending to process_application')
     else:
-        print("Not sending to frontend!")
+        print("Email is not job related. Not sending to process application!")
      
-    return email_data  # Returning for further processing if needed
+    return email_data  
 
 def fetch_latest_email(service):
     """Manually fetches the latest email from the inbox."""

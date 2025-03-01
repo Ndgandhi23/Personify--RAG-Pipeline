@@ -101,7 +101,8 @@ $('.new-btn').click(function() {
 $('.confirm-btn').click(function() {
     const date = $('.input-field:first-child').val();
     const company = $('.input-field:nth-child(2)').val();
-    const email = $('.input-field:nth-child(3)').val();
+    const role = $('.input-field:nth-child(3)').val();
+    const email = $('.input-field:nth-child(4)').val();
     const status = $('.status-dropdown').val();
 
     // Check if any field is missing
@@ -111,7 +112,9 @@ $('.confirm-btn').click(function() {
     }
 
     const payload = {
+        'user_email': userEmailElement.textContent,
         'company': company,
+        'role': role,
         'date': date,
         'company_email': email,
         'status': status
