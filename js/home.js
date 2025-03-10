@@ -1,36 +1,39 @@
 //Fetch the email from the url request to access the home page + populate it + store it for other pages.
 const userEmailElement = document.querySelector('.account-email .nav-email'); //Get the current user's email!
 const logoutButton = document.querySelector('.logout-button');
+
+//Execute event listener once the home page has been fully rendered from the html/css
 document.addEventListener('DOMContentLoaded', () => {
     //Get email from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
-    if (!email && !localStorage.getItem('userEmail')) {
-        //Redirect to login if no email found in URL or localStorage
+    
+    //If the user 
+    if (!email) {
         window.location.href = '/login.html';
         return;
     }
-    //If email exists in URL, update localStorage
-    if (email) {
-        localStorage.setItem('userEmail', decodeURIComponent(email));
-    }
     
-    //Display user email in navbar (use URL param or stored email)
+    localStorage.setItem('userEmail', decodeURIComponent(email));
+    
+    //Display user email in navbar
     if (userEmailElement) {
-        userEmailElement.textContent = email || localStorage.getItem('userEmail');
+        userEmailElement.textContent = localStorage.getItem('userEmail');
     }
+
+    //Set the logout button content.
     if(logoutButton){
         logoutButton.children[0].textContent = "Logout"
     }
 });
 
 if (logoutButton){
-
+    //Logout button functionality
     logoutButton.addEventListener('click', () => {
         //Redirect back to the login page.
         localStorage.removeItem('userEmail'); //Remove before logging out.
         window.location.href = '/login.html';
-        //PLEASE FIX the below part -> Once you logout, do not go back to home page!
+        //PLEASE FIX the below part -> Once you logout, do not go back to home page with your email!
         history.pushState(null, null, '/home.html');
         // Listen for the back button or any popstate event.
         // When that happens, force a redirect to the home page.
@@ -88,6 +91,7 @@ const debug = false;
 
 $(document).ready(function() {
     if (debug === true) {
+        //Refresh the application grid for any changes to the application collection.
         refreshApplicationGrid(exampleData);
     }
 })
@@ -97,20 +101,17 @@ $('.new-btn').click(function() {
     $('.new-input-wrapper').slideDown();
 })
 
-
+//For manually entering job applications
 $('.confirm-btn').click(function() {
-    const date = $('.input-field:first-child').val();
-    const company = $('.input-field:nth-child(2)').val();
-    const role = $('.input-field:nth-child(3)').val();
-    const email = $('.input-field:nth-child(4)').val();
-    const status = $('.status-dropdown').val();
+    const [date, company, role, email] = $('.input-field').map((_, el) => $(el).val()).get(), status = $('.status-dropdown').val();
 
     // Check if any field is missing
-    if (!date || !company || !email || !status) {
+    if (!date || !company || !role || !email || !status) {
         $('.add-error').text('Please enter all required fields!').show(); // Show error if any field is missing
         return; // Exit the function early
     }
 
+    //Prepare the application document.
     const payload = {
         'user_email': userEmailElement.textContent,
         'company': company,
@@ -120,6 +121,7 @@ $('.confirm-btn').click(function() {
         'status': status
     }
 
+    //Send the POST rrequest to manually add a new application.
     $.ajax({
         url: 'http://127.0.0.1:5000/jobstatuses',
         type: 'POST',  // Explicitly set the method
@@ -141,4 +143,3 @@ $('.confirm-btn').click(function() {
         }
     });
 })
-

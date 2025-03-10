@@ -1,3 +1,4 @@
+//Accessing our three forms.
 const registerForm = document.querySelector('.form-box.register');
 const loginForm = document.querySelector('.form-box.login');
 const forgotPasswordForm = document.querySelector('.form-box.forgot-password');
@@ -9,8 +10,9 @@ function toggleForms() {
     forgotPasswordForm.classList.toggle('active');
 }
 
-const forgotLink = document.querySelector('.forgot-link')
+const forgotLink = document.querySelector('.forgot-link') //Fetching the forgot link to redirect to forgot password form.
 forgotLink.addEventListener('click', (e) => {
+    //Make forgotPassword active and login and register form to be inactive to only display the forgot password form.
     e.preventDefault();
     loginForm.classList.remove('active');
     registerForm.classList.remove('active');
@@ -21,7 +23,7 @@ document.querySelectorAll('.toggle-panel button').forEach(button => {
     button.addEventListener('click', () => {
         const container = document.querySelector('.container');
         container.classList.toggle('active');
-        //Switching between login and register.
+        //Switching between login and register in the container.
         if (!forgotPasswordForm.classList.contains('active')) {
             loginForm.classList.toggle('active');
             registerForm.classList.toggle('active');
@@ -29,6 +31,7 @@ document.querySelectorAll('.toggle-panel button').forEach(button => {
     });
 });
 
+//Set functionality for the forgot password button and page.
 const forgotPasswordBtn = document.querySelector('.forgot-password-button');
 const forgotPasswordPage = document.querySelector('.forgot-password-form');
 
@@ -61,6 +64,7 @@ const displayMessage = (container, message, type = 'error') => {
     `;
     messageElement.textContent = message;
 
+    //Insert it before a new position.
     container.insertBefore(messageElement, container.children[5]);
     lastMessageTime = currentTime;
 
@@ -84,6 +88,7 @@ const isValidPassword = (password) => {
     return passwordRegex.test(password);
 }
 
+//Functionality for forgot password form.
 const forgotPassword = (e) => {
     e.preventDefault(); // Prevent form submission/page reload, which is default behavior at end of submission event listener method.
     try{
@@ -107,7 +112,7 @@ const forgotPassword = (e) => {
     $.ajax({
         url: 'http://127.0.0.1:5000/forgot-password',
         type: 'POST',
-        data: JSON.stringify(sensitive_info),
+        data: JSON.stringify(sensitive_info), 
         contentType: 'application/json',
         dataType: 'json',
         success: function(data, textStatus, xhr) {
@@ -172,7 +177,7 @@ button.addEventListener('click', () => {
     //Change the corresponding fields with a transition
     const toggleFields = togglePanel[click];
     setTimeout(() => {
-        //Getting and retrieving the corresponding fields respectively.
+        //Getting and setting the corresponding fields respectively.
         let header = togglePanelEl.querySelector("h1");
         header.innerHTML = toggleFields["Header"];
 
@@ -246,7 +251,7 @@ const handleLogin = () => {
             }else{
                 return;
             }
-            
+            //Display an error message for failure in forgot password.
             displayMessage(loginPage, errorMessage, 'error');
       }
     });
@@ -256,6 +261,7 @@ const handleLogin = () => {
 const emailField = registerPage.querySelector('input[type="email"]');
 const passField = registerPage.querySelector('input[type="password"]');
 
+//Function to handle registration functionality.
 const handleRegistration = () => {
     //Retrieve username, email, and password.
     const password = passField.value;
@@ -264,9 +270,9 @@ const handleRegistration = () => {
     //Validate required fields.
     if (!isValidEmail(email)){
         let invalidEmailMsg = 'Please enter your email in a correct format.';
-        //If the email service is off.
+        //If not using a valid email service.
         if (!(email.includes('gmail') || email.includes('hotmail') || email.includes('yahoo'))){
-            invalidEmailMsg = 'Invalid Email Service (Supported types: Gmail, Hotmail, Yahoo)';
+            invalidEmailMsg = 'Invalid Email Service';
         }
         displayMessage(registerPage, invalidEmailMsg, 'error');
         return;

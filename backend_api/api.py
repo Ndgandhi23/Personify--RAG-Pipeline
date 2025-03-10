@@ -56,16 +56,8 @@ def jobstatus_manual():
         print(data)
 
         # Extract the parameters from the JSON
-        company = data.get('company')
-        date = data.get('date')
-        role = data.get('role')
-        user_email = data.get('user_email')  # This should be dynamically set based on the logged-in user
-        company_email = data.get('company_email')
-        status = data.get('status')
-
-        # Validate that all required parameters are provided
-        if not company or not date or not status or not company_email or not role:
-            return jsonify({"error": "Missing required parameters"}), 400
+        fields = ('company', 'date', 'role', 'user_email', 'company_email', 'status')
+        company, date, role, user_email, company_email, status = (data.get(field) for field in fields)
 
         # Insert the application into MongoDB
         try:
@@ -88,17 +80,9 @@ def process_application():
         data = request.get_json()
         print(data)
 
-        # Extract parameters from the JSON
-        user_email = data.get('user_email') 
-        company = data.get('company')
-        role = data.get('role')
-        date = data.get('date')
-        company_email = data.get('company_email')
-        status = data.get('status')
-
-        # Validate that all required parameters are provided
-        if not user_email or not company or not date or not status or not company_email or not role:
-            return jsonify({"error": "Missing required parameters"}), 400
+         # Extract the parameters from the JSON
+        fields = ('company', 'date', 'role', 'user_email', 'company_email', 'status')
+        company, date, role, user_email, company_email, status = (data.get(field) for field in fields)
 
         # Insert the application into MongoDB
         try:
@@ -118,13 +102,15 @@ def process_application():
 
 email_list = []  # Define global variable at top of file
         
-active_connections = set()
+active_connections = set() #Maintain a set of active connections between client and backend sockets.
 
+#When client connects to backend socket, set up new connection.
 @socketio.on('connect')
 def handle_connect():
     active_connections.add(request.sid)
     print(f"Client connected: {request.sid}")
 
+#Clear the connection whenever user logs out of the application.
 @socketio.on('disconnect')
 def handle_disconnect():
     active_connections.remove(request.sid)
@@ -151,17 +137,17 @@ def login():
         data = request.get_json()
         print(data)
                 
-        # Fetch the document with the email
         try:
             users_collection = mongo.db.users
+            # Fetch the user document corresponding the email
             user = users_collection.find_one({"email": data.get('your_email')})
-            # If no such document exists, print out invalid user email, no account associated
+            # If no such document exists, user account non existant.
             if not user:
                 return jsonify({
                     "status": "error",
                     "message": "Couldn't find your Personify account corresponding to your email."
                 }), 404
-            # Get it's password and verify against the currently entered password.
+            # Verify the entered password against the user's current password.
             verified = logregister.verify_password(data.get('pass'), user["password"])
             # If not successful, invalid password.
             if not verified:
@@ -170,6 +156,7 @@ def login():
                     "message": "Invalid password, please try again."
                 }), 403
         except Exception as e:
+            #Either an exception or a database error.
             return jsonify({
                 "status": "error",
                 "message": f"Error connecting to database, check that out!"
@@ -186,7 +173,7 @@ def registration():
         data = request.get_json()
         print(data)
 
-        # Performing SHA-256 password hashing.
+        # Performing client-side encryption on password using SHA-256 Hashing. 
         data['pass'] = logregister.hash_password(data.get('pass'))
         # If user not present, login not successful.
         try:
@@ -197,15 +184,16 @@ def registration():
                     "status": "error",
                     "message": "Account already exists, please login."
                 }), 404
+            
             #If everything goes well at the end, successful registration.
             users_collection.insert_one(schema.User(data.get('your_email'), data.get('pass')).to_dict())
-        
             return jsonify({
                 "status": "success",
                 "message": "Registration successful"
             }), 200
             
         except Exception as e:
+            #Either exception or issues connecting to database.
             return jsonify({
                 "status": "error",
                 "message": f"Error connecting to database, check that out!"
@@ -222,8 +210,8 @@ def forgot_password():
         print(data)
         try:
             users_collection = mongo.db.users
-            # If user not present, login not successful.
             user = users_collection.find_one({"email": data.get('your_email')})
+            # If user not present, then you have to register for a new account.
             if not user:
                 return jsonify({
                     "status": "error",
@@ -236,17 +224,17 @@ def forgot_password():
                     "status": "error",
                     "message": "That is your current password, please enter a different one."
                 }), 400
-            # Hash the new password
-            # Update the document to be the new password
+            # Update the document's password to be the new password
             result = users_collection.update_one(
                 {"email": data.get('your_email')},  # Find document by email
                 {"$set": {"password": new_password_hash}}  # Update it's password field
             )
+            #If we failed to modify the document, then we failed to update password.
             if result.modified_count == 0:
                 return jsonify({
                     "status": "error",
                     "message": "Failed to update password."
-                }), 500
+                }), 501
                 
             return jsonify({
                 "status": "success",

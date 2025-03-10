@@ -72,7 +72,7 @@ def watch_gmail():
     service = build("gmail", "v1", credentials=creds)
 
     request_body = {
-        "labelIds": ["INBOX"],
+        "labelIds": ["INBOX"], 
         "topicName": TOPIC_NAME,
     }
 
