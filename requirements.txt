@@ -1,5 +1,12 @@
+flask
+flask-pymongo
+flask-sock
+flask-socketio
+flask-cors
+python-dotenv
 google-auth
 google-auth-oauthlib
 google-api-python-client
 requests
-python-dotenv
+werkzeug
+openai
