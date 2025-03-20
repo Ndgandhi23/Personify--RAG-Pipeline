@@ -193,7 +193,7 @@ button.addEventListener('click', () => {
 const redirectToHome = (email) => {
     // Encode email to safely pass in URL
     const encodedEmail = encodeURIComponent(email);
-    window.location.href = `/home.html?email=${encodedEmail}`;
+    window.location.href = `/newhome.html?email=${encodedEmail}`;
 }
 
 //Get the login and register pages for error handling.

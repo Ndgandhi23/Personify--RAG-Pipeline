@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personify - Job Application Tracking</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!---Awesome icons from font awesome!!-->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .font-archivo {
+        font-family: "Archivo Narrow", sans-serif;
+      }
+      .font-inter {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="font-archivo">
+    <header class="flex justify-center w-full h-20 bg-black bg-opacity-90">
+      <nav
+        class="flex justify-between items-center px-5 py-0 w-full max-w-[1512px] max-md:px-4 max-md:py-0 max-sm:px-2.5 max-sm:py-0"
+      >
+        <h1 class="text-3xl text-white max-md:text-4xl max-sm:text-3xl">
+            <a href="javascript:void(0);" onclick="navigateTo('newhome.html')" class="text-white hover:bg-gray-700 px-2 py-1 rounded">
+                Personify
+              </a>
+        </h1>
+        <div class="flex gap-10 max-md:gap-5 max-sm:hidden">
+          <button
+            class="h-14 text-2xl text-white bg-red-500 cursor-pointer w-[108px] max-md:text-xl max-md:h-[50px] max-md:w-[90px]"
+          >
+            FAQ
+          </button>
+          <button
+            class="h-14 text-2xl text-white bg-red-500 cursor-pointer w-[108px] max-md:text-xl max-md:h-[50px] max-md:w-[90px]"
+          >
+            Contact
+          </button>
+        </div>
+        <div class="pt-1.5 pr-3 pb-5 pl-0">
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/9b46db6a4763aeabba03deb2a1b1a0fb2164ea25"
+            alt="Profile"
+            class="profile-pic object-cover h-[90px] w-[90px] max-sm:w-20 max-sm:h-20"
+          />
+        </div>
+      </nav>
+    </header>
+
+    <main class="relative px-11 py-3.5 finisher-header min-h-[593px] fit-content max-sm:p-2.5">
+        <section
+        class="flex flex-col gap-1 items-center mx-auto my-0 max-w-[1382px] max-md:px-4 max-md:py-0"
+      >
+        <h2
+          class="text-5xl italic text-center text-gray-300 max-md:text-4xl max-sm:text-3xl"
+        >
+          Personify
+        </h2>
+        <p
+          class="mb-5 text-2xl font-medium text-center text-gray-300 max-md:text-xl max-sm:text-lg"
+        >
+          Tracking one job application at a time.
+        </p>
+        <!---Search engine!-->
+<main class="flex items-center justify-center my-7">
+    <div class="flex w-full rounded bg-white shadow">
+      <input
+        type="search"
+        name="search"
+        id="search"
+        placeholder="Search by Role"
+        class="search-engine-input flex-grow border-none bg-transparent px-4 py-1 text-gray-900 outline-none"
+      />
+      <button id="openButton" class="open-button m-2 rounded bg-teal-800 px-4 py-2 text-white">
+        Open
+      </button>
+    <button id="searchButton" class="m-2 rounded bg-teal-800 px-4 py-2 text-white">
+        <i class="fa fa-search"></i>
+    </button>
+    </div>
+  </main>
+  
+  <!-- Inline Search Overlay (initially hidden) -->
+  <div id="searchOverlay" class="mx-auto w-full max-w-4xl my-5 hidden">
+    <div class="bg-white rounded shadow-lg flex flex-col md:flex-row overflow-hidden">
+      <!-- Left Side: Filter Options -->
+      <div class="md:w-1/2 p-4">
+        <h3 class="text-xl font-bold mb-4">Create Search</h3>
+        <form id="filterForm">
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-1">Filters</label>
+            <div class="flex flex-col space-y-2">
+              <label class="inline-flex items-center">
+                <input type="checkbox" class="form-checkbox text-teal-600" value="Date">
+                <span class="ml-2">Date</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="checkbox" class="form-checkbox text-teal-600" value="Company">
+                <span class="ml-2">Company</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="checkbox" class="form-checkbox text-teal-600" value="Email">
+                <span class="ml-2">Company Email</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="checkbox" class="form-checkbox text-teal-600" value="Status">
+                <span class="ml-2">Status</span>
+              </label>
+            </div>
+          </div>
+          <div class="date-info mb-4 hidden">
+            <label class="block text-gray-700 mb-1">Date</label>
+            <input type="date" class="w-full border border-gray-300 rounded p-2">
+          </div>
+        </form>
+        <button id="closeOverlay" class="mt-4 w-full rounded bg-gray-500 px-4 py-2 text-white">
+          Close
+        </button>
+      </div>
+      <!-- Right Side: Top 5 Search Results -->
+      <div class="md:w-1/2 p-4 border-t md:border-t-0 md:border-l border-gray-300">
+        <ul id="search-results" class="search-results space-y-2">
+            <li class="p-2 border border-gray-200 rounded hover:bg-gray-100 active:bg-gray-200">
+                <i class="fa fa-search"></i> Result 1
+            </li>
+            <li class="p-2 border border-gray-200 rounded hover:bg-gray-100 active:bg-gray-200">
+                <i class="fa fa-search"></i> Result 2
+            </li>
+            <li class="p-2 border border-gray-200 rounded hover:bg-gray-100 active:bg-gray-200">
+                <i class="fa fa-search"></i> Result 3
+            </li>
+            <li class="p-2 border border-gray-200 rounded hover:bg-gray-100 active:bg-gray-200">
+                <i class="fa fa-search"></i> Result 4
+            </li>
+            <li class="p-2 border border-gray-200 rounded hover:bg-gray-100 active:bg-gray-200">
+                <i class="fa fa-search"></i> Result 5
+            </li>
+            <li class="p-2 border border-gray-200 rounded hover:bg-gray-100 active:bg-gray-200">
+                <i class="fa fa-search"></i> Result 6
+            </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+    <section class="p-5 text-2xl text-black">
+        <p>View <span class="font-bold">X</span> Jobs</p>
+        <div class="grid grid-cols-4 text-[1.5rem] mt-[3rem] ml-[10%]">
+            <div class="underline">Date</div>
+            <div class="underline">Company</div>
+            <div class="underline">Email</div>
+            <div class="underline mb-[5%]">Status</div>
+          </div>
+        </section>
+
+    <footer
+        class="px-0 pt-5 pb-2.5 text-2xl text-center text-black bg-white max-sm:text-2xl"
+    >
+        2025 @ Personify Team
+    </footer>
+    <!--This is where our js scripts go for functionality and behavior.-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/home.js"></script>
+    <script src="finisher-header.es5.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        new FinisherHeader({
+            "count": 5,
+            "size": {
+              "min": 900,
+              "max": 1500,
+              "pulse": 0
+            },
+            "speed": {
+              "x": {
+                "min": 0,
+                "max": 0.3
+              },
+              "y": {
+                "min": 0,
+                "max": 0
+              }
+            },
+            "colors": {
+              "background": "#070f71",
+              "particles": [
+                "#6be5ff",
+                "#ff333d",
+                "#ffde00"
+              ]
+            },
+            "blending": "lighten",
+            "opacity": {
+              "center": 0.15,
+              "edge": 0.05
+            },
+            "skew": 0,
+            "shapes": [
+              "s"
+            ]
+          });
+    </script>
+  </body>
+</html>

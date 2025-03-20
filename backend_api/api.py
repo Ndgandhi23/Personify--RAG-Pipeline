@@ -48,6 +48,17 @@ def get_indexes():
     indexes = mongo.db.users.index_information()
     return jsonify(indexes)
 
+#Fetch job applications based on required fields
+@app.route('/filter', methods=['POST'])
+def filter_applications():
+    if request.is_json:
+        data = request.get_json()
+        print(data)
+        #Do the search functionality here! (If you need to add more methods and endpoints, go ahead!)
+        return jsonify({"success": True, "applications": data }), 200 #Obv change what applications is set to in this case!
+    else:
+        return jsonify({"error": "Request must be JSON"}), 400
+
 #Manually adds job statuses based on company, job, email link, and status 
 @app.route('/jobstatuses', methods=['POST'])
 def jobstatus_manual():
@@ -129,6 +140,8 @@ def add_emails():
         return jsonify({"message": "Emails saved and broadcast successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+#Method endpoints for login page (login, register, forgot password).
 
 @app.route('/login', methods=['POST'])
 def login():
