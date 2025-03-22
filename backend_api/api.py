@@ -67,39 +67,48 @@ def get_indexes():
     return jsonify(indexes)
 
 #Fetch job applications based on required fields
-#Fetch job applications based on required fields
 @app.route('/filter', methods=['POST'])
 def filter_applications():
-    if request.is_json:
-        data = request.get_json()
-        print(data)
-        
-        applications_collection = mongo.db.applications
-        users_collection = mongo.db.users
-        query = {}
-        
-        # Extract user email (assuming it's sent in the request)
-        user_email = data.get('user_email')
-        if not user_email:
-            return jsonify({"error": "User email is required"}), 400
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
 
-        # Build the search query
-        if 'role' in data and not any(k in data for k in ['date', 'company', 'company_email', 'status']):
+    data = request.get_json()
+    print(data)
+    
+    applications_collection = mongo.db.applications
+    users_collection = mongo.db.users
+    
+    # Require user_email
+    user_email = data.get('user_email')
+    if not user_email:
+        return jsonify({"error": "User email is required"}), 400
+
+    # Restrict to recent search to user's applications
+    query = {"user_email": user_email}  
+    
+    # Build the search query
+    search_term = {}
+    if 'role' in data and not any(k in data for k in ['date', 'company', 'company_email', 'status']):
+        query['role'] = {'$regex': data['role'], '$options': 'i'}
+        search_term['role'] = data['role']
+    else:
+        if 'role' in data:
             query['role'] = {'$regex': data['role'], '$options': 'i'}
-            search_term = data['role']
-        else:
-            if 'date' in data:
-                query['date'] = data['date']
-            if 'company' in data:
-                query['company'] = {'$regex': data['company'], '$options': 'i'}
-            if 'company_email' in data:
-                query['company_email'] = {'$regex': data['company_email'], '$options': 'i'}
-            if 'status' in data:
-                query['status'] = data['status']
+            search_term['role'] = data['role']
+        if 'date' in data:
+            query['date'] = data['date']
+            search_term['date'] = data['date']
+        if 'company' in data:
+            query['company'] = {'$regex': data['company'], '$options': 'i'}
+            search_term['company'] = data['company']
+        if 'company_email' in data:
+            query['company_email'] = {'$regex': data['company_email'], '$options': 'i'}
+            search_term['company_email'] = data['company_email']
+        if 'status' in data:
+            query['status'] = data['status']
+            search_term['status'] = data['status']
 
-            #  Constructs a single search term string by joining non-empty values from 'role', 'company', 'date', and 'status' keys in the data dictionary with spaces.
-            search_term = " ".join([data.get(k, '') for k in ['role', 'company', 'date', 'status'] if data.get(k)])
-
+    try:
         # Fetch application results
         results = list(applications_collection.find(query).limit(5))
         for result in results:
@@ -117,10 +126,14 @@ def filter_applications():
                     {"$set": {"searches": searches}}
                 )
 
-        return jsonify({"success": True, "applications": results}), 200
-    else:
-        return jsonify({"error": "Request must be JSON"}), 400
-
+        return jsonify({
+            "success": True,
+            "message": "Applications retrieved successfully",
+            "applications": results
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    
 #Manually adds job statuses based on company, job, email link, and status 
 @app.route('/jobstatuses', methods=['POST'])
 def jobstatus_manual():

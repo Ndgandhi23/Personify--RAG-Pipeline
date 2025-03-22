@@ -151,12 +151,12 @@ def fetch_email_by_id(service, msg_id):
     # Classify the email content
     status = classify_email(content)
 
-   
     email_data = {
         "user_email": "name@example.com",  #This should be the email of the logged in user.
         "date": formatted_date,
         "company": company,
         "company_email": sender,
+        "role": role,
         "status": status
     }
 
