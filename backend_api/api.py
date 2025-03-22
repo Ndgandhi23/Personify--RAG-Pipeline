@@ -29,9 +29,27 @@ app.config["MONGO_URI"] = (
 mongo = PyMongo(app)
 # Create indexes for app on email + company -> mongo.db.applications.create_index([("email", 1)], unique=True)
 
-CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5500", "supports_credentials": True}})  # Allow requests from your frontend
-socketio = SocketIO(app, cors_allowed_origins="*")
-sock = Sock(app) #Setting up the socket object
+# Update CORS configuration to allow requests from localhost:3000 (or your frontend port)
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:5500",  # Live server default port
+            "http://127.0.0.1:5500"   # Localhost with IP address
+        ],
+        "supports_credentials": True
+    }
+})
+
+
+
+# Update Socket.IO CORS configuration
+socketio = SocketIO(app, cors_allowed_origins=[
+    "http://localhost:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5500"
+])
+sock = Sock(app)  # Setting up the socket object
 
 users = [
     {"id": 1, "name": "Alice", "email": "alice@example.com"},
@@ -51,11 +69,43 @@ def get_indexes():
 #Fetch job applications based on required fields
 @app.route('/filter', methods=['POST'])
 def filter_applications():
+    
     if request.is_json:
         data = request.get_json()
         print(data)
-        #Do the search functionality here! (If you need to add more methods and endpoints, go ahead!)
-        return jsonify({"success": True, "applications": data }), 200 #Obv change what applications is set to in this case!
+        
+        applications_collection = mongo.db.applications
+        query = {}
+        
+         # If searching by role only
+        if 'role' in data and not any(k in data for k in ['date', 'company', 'company_email', 'status']):
+
+            # '$regex'- will match any role field that contains this substring
+            # '$options': 'i'- search will match regardless of whether the text is uppercase or lowercase
+            query['role'] = {'$regex': data['role'], '$options': 'i'}  
+            results = list(applications_collection.find(query).limit(5))
+        
+        # If searching with filters
+        else:
+            if 'date' in data:
+                query['date'] = data['date']
+            if 'company' in data:
+                query['company'] = {'$regex': data['company'], '$options': 'i'}
+            if 'company_email' in data:
+                query['company_email'] = {'$regex': data['company_email'], '$options': 'i'}
+            if 'status' in data:
+                query['status'] = data['status']
+
+            results = list(applications_collection.find(query).limit(5))
+        
+        # Convert MongoDB results to JSON-serializable format
+        for result in results:
+            result['_id'] = str(result['_id'])
+            
+        return jsonify({
+            "success": True,
+            "applications": results
+        }), 200
     else:
         return jsonify({"error": "Request must be JSON"}), 400
 
