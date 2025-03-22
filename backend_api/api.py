@@ -67,6 +67,7 @@ def get_indexes():
     return jsonify(indexes)
 
 #Fetch job applications based on required fields
+#Fetch job applications based on required fields
 @app.route('/filter', methods=['POST'])
 def filter_applications():
     if request.is_json:
