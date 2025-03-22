@@ -69,23 +69,23 @@ def get_indexes():
 #Fetch job applications based on required fields
 @app.route('/filter', methods=['POST'])
 def filter_applications():
-    
     if request.is_json:
         data = request.get_json()
         print(data)
         
         applications_collection = mongo.db.applications
+        users_collection = mongo.db.users
         query = {}
         
-         # If searching by role only
-        if 'role' in data and not any(k in data for k in ['date', 'company', 'company_email', 'status']):
+        # Extract user email (assuming it's sent in the request)
+        user_email = data.get('user_email')
+        if not user_email:
+            return jsonify({"error": "User email is required"}), 400
 
-            # '$regex'- will match any role field that contains this substring
-            # '$options': 'i'- search will match regardless of whether the text is uppercase or lowercase
-            query['role'] = {'$regex': data['role'], '$options': 'i'}  
-            results = list(applications_collection.find(query).limit(5))
-        
-        # If searching with filters
+        # Build the search query
+        if 'role' in data and not any(k in data for k in ['date', 'company', 'company_email', 'status']):
+            query['role'] = {'$regex': data['role'], '$options': 'i'}
+            search_term = data['role']
         else:
             if 'date' in data:
                 query['date'] = data['date']
@@ -96,16 +96,27 @@ def filter_applications():
             if 'status' in data:
                 query['status'] = data['status']
 
-            results = list(applications_collection.find(query).limit(5))
-        
-        # Convert MongoDB results to JSON-serializable format
+            #  Constructs a single search term string by joining non-empty values from 'role', 'company', 'date', and 'status' keys in the data dictionary with spaces.
+            search_term = " ".join([data.get(k, '') for k in ['role', 'company', 'date', 'status'] if data.get(k)])
+
+        # Fetch application results
+        results = list(applications_collection.find(query).limit(5))
         for result in results:
             result['_id'] = str(result['_id'])
-            
-        return jsonify({
-            "success": True,
-            "applications": results
-        }), 200
+
+        # Update user's recent searches
+        if search_term:
+            user = users_collection.find_one({"email": user_email})
+            if user:
+                searches = user.get("searches", [])
+                searches.insert(0, search_term)
+                searches = searches[:5]  # Keep only 5 most recent
+                users_collection.update_one(
+                    {"email": user_email},
+                    {"$set": {"searches": searches}}
+                )
+
+        return jsonify({"success": True, "applications": results}), 200
     else:
         return jsonify({"error": "Request must be JSON"}), 400
 
