@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personify- Personalize Your Experience</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Awesome icons from font awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom font styles */
+      .font-archivo {
+        font-family: "Archivo Narrow", sans-serif;
+      }
+      .font-inter {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-archivo">
+    <!-- Header -->
+    <header class="flex justify-center w-full h-20 bg-black bg-opacity-90">
+      <nav
+        class="flex justify-between items-center px-5 py-0 w-full max-w-[1512px] max-md:px-4 max-md:py-0 max-sm:px-2.5 max-sm:py-0"
+      >
+        <h1 class="text-3xl text-white max-md:text-4xl max-sm:text-3xl">
+          <a
+            href="javascript:void(0);"
+            onclick="navigateTo('newhome.html')"
+            class="text-white hover:bg-gray-700 px-2 py-1 rounded"
+          >
+            Personify
+          </a>
+        </h1>
+        <div class="pt-1.5 pr-3 pb-5 pl-0">
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/9b46db6a4763aeabba03deb2a1b1a0fb2164ea25"
+            alt="Profile"
+            class="profile-pic object-cover h-[90px] w-[90px] max-sm:w-20 max-sm:h-20"
+          />
+        </div>
+      </nav>
+    </header>
+
+    <div class="flex">
+      <!-- Sidebar for Desktop -->
+      <div
+        id="sidebar"
+        class="hidden md:block w-64 bg-white h-[calc(100vh-5rem)] shadow-lg"
+      >
+        <div class="p-4 space-y-2">
+          <button
+            data-tab="faq"
+            class="sidebar-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors bg-blue-500 text-white"
+          >
+            <span>FAQ</span>
+          </button>
+          <button
+            data-tab="contact"
+            class="sidebar-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors hover:bg-gray-100"
+          >
+            <span>Contact Us</span>
+          </button>
+          <button
+            data-tab="profile"
+            class="sidebar-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors hover:bg-gray-100"
+          >
+            <span>Profile</span>
+          </button>
+          <button
+            data-tab="settings"
+            class="sidebar-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors hover:bg-gray-100"
+          >
+            <span>Settings</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobileMenuButton"
+        class="md:hidden fixed bottom-4 right-4 z-50 bg-red-500 text-white p-4 rounded-full shadow-lg"
+      >
+        Menu
+      </button>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobileMenu"
+        class="md:hidden fixed inset-0 bg-black bg-opacity-50 hidden z-40"
+      >
+        <div class="bg-white w-64 h-full">
+          <div class="p-4 space-y-2">
+            <button
+              data-tab="faq"
+              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
+            >
+              FAQ
+            </button>
+            <button
+              data-tab="contact"
+              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
+            >
+              Contact Us
+            </button>
+            <button
+              data-tab="profile"
+              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
+            >
+              Profile
+            </button>
+            <button
+              data-tab="settings"
+              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
+            >
+              Settings
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div id="content" class="flex-1 p-4">
+        <!-- FAQ Section -->
+        <section id="faqSection" class="tab-content">
+          <div class = "flex justify-between">
+              <h2 class="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+            <button id="addQuestionButton" class="mb-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              +
+            </button>
+          </div>
+        <!-- New Question Form (hidden by default) -->
+        <div id="newQuestionForm" class="mb-4 hidden">
+          <input
+            type="text"
+            id="newQuestionInput"
+            placeholder="Enter your question"
+            class="w-full border p-2 rounded mb-2"
+          />
+          <button id="submitQuestionButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Submit Question
+          </button>
+        </div>
+        <!---Questions List-->
+          <div class="space-y-4">
+            <div class="faq-item border p-4 rounded">
+              <div
+                class="faq-question cursor-pointer flex justify-between"
+                data-index="0"
+              >
+                <span class="font-semibold">What is Personify?</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer hidden mt-2">
+                Personify is a platform that helps you manage and organize your
+                personal and professional life effectively.
+              </div>
+            </div>
+            <div class="faq-item border p-4 rounded">
+              <div
+                class="faq-question cursor-pointer flex justify-between"
+                data-index="1"
+              >
+                <span class="font-semibold">How do I get started?</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer hidden mt-2">
+                Simply create an account, complete your profile, and start
+                exploring our features!
+              </div>
+            </div>
+            <div class="faq-item border p-4 rounded">
+              <div
+                class="faq-question cursor-pointer flex justify-between"
+                data-index="2"
+              >
+                <span class="font-semibold">Is my data secure?</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer hidden mt-2">
+                Yes! We use industry-standard encryption and security measures
+                to protect your data.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contactSection" class="tab-content hidden">
+          <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
+          <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow">
+            <form class="space-y-6">
+              <div>
+                <label class="block">Name</label>
+                <input type="text" class="w-full border p-2 rounded" />
+              </div>
+              <div>
+                <label class="block">Email</label>
+                <input type="email" class="w-full border p-2 rounded" />
+              </div>
+              <div>
+                <label class="block">Subject</label>
+                <input type="text" class="w-full border p-2 rounded" />
+              </div>
+              <div>
+                <label class="block">Message</label>
+                <textarea rows="4" class="w-full border p-2 rounded"></textarea>
+              </div>
+              <button
+                type="button"
+                class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profileSection" class="tab-content hidden">
+          <h2 class="text-3xl font-bold mb-6">Profile Information</h2>
+          <div
+            class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow space-y-6"
+          >
+            <div>
+              <label class="block">Username</label>
+              <input type="text" class="w-full border p-2 rounded" />
+            </div>
+            <div>
+              <label class="block">Email</label>
+              <input type="email" class="w-full border p-2 rounded" />
+            </div>
+            <div>
+              <label class="block">Current Password</label>
+              <input type="password" class="w-full border p-2 rounded" />
+            </div>
+            <button class="text-red-500 hover:text-red-600">
+              Change Password
+            </button>
+            <button
+              type="button"
+              class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
+            >
+              Save Changes
+            </button>
+          </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settingsSection" class="tab-content hidden">
+          <h2 class="text-3xl font-bold mb-6">Settings</h2>
+          <div
+            class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow space-y-6"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold">Language</h3>
+                <p class="text-sm text-gray-500">
+                  Select your preferred language
+                </p>
+              </div>
+              <select class="w-32 border p-2 rounded">
+                <option>English</option>
+                <option>Spanish</option>
+                <option>French</option>
+              </select>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold">Dark Mode</h3>
+                <p class="text-sm text-gray-500">Enable dark theme</p>
+              </div>
+              <button
+                data-setting="darkMode"
+                class="settings-toggle border p-2 rounded"
+              >
+                Off
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+              <h3 class="font-semibold">Two-Factor Authentication</h3>
+              <p class="text-sm text-gray-500">Enhanced security</p>
+              <p class="text-14px text-red-500">Under development.</p>
+              </div>
+              <button
+              data-setting="twoFA"
+              class="settings-toggle border p-2 rounded"
+              >
+              Off
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+              <h3 class="font-semibold">Allow Contact via SMS</h3>
+              <p class="text-sm text-gray-500">Receive SMS notifications</p>
+              <p class="text-14px text-red-500">Under development.</p>
+              </div>
+              <button
+              data-setting="smsContact"
+              class="settings-toggle border p-2 rounded"
+              >
+              Off
+              </button>
+            </div>
+            <button
+              type="button"
+              class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300"
+            >
+              Restore Defaults
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="px-0 pt-5 pb-2.5 text-2xl text-center text-black bg-white">
+      2025 @ Personify Team
+    </footer>
+
+    <!-- Additional scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/home.js"></script>
+    <script src="js/personalize.js"></script>
+  </body>
+</html>

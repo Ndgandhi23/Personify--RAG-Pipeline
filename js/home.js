@@ -48,23 +48,30 @@ $(document).ready(function () {
       }
     });
     
-    // Functionality for open button to open the search window.
-    $(".open-button").on("click", function (e) {
-        e.stopPropagation(); // Prevent event bubbling.
-        $("#searchOverlay").fadeIn(200); // Show the overlay with a fade-in effect.
-    });
+    // Functionality for open button to open the filter window.
+    $(document).ready(function () {
+        // Functionality for open button to open the search window.
+        $(".open-button").on("click", function (e) {
+            e.stopPropagation(); // Prevent event bubbling.
+            if (!$("#searchOverlay").is(":visible")){
+                $("#searchOverlay").fadeIn(200); // Show the overlay with a fade-in effect.
+            }else{
+                $("#searchOverlay").fadeOut(200); // Show the overlay with a fade-in effect.
+            }
+        });
 
-    // When the "Close" button is clicked, hide the overlay.
-    $("#closeOverlay").on("click", function (e) {
-      e.stopPropagation();
-      $("#searchOverlay").fadeOut(200);
-    });
-    
-    // Optional: When clicking outside of the overlay, hide it.
-    $(document).on("click", function (e) {
-      if (!$(e.target).closest("#searchOverlay, #searchButton, #searchButton *").length) {
+        // When the "Close" button is clicked, hide the overlay.
+        $("#closeOverlay").on("click", function (e) {
+        e.stopPropagation();
         $("#searchOverlay").fadeOut(200);
-      }
+        });
+        
+        // Optional: When clicking outside of the overlay, hide it.
+        $(document).on("click", function (e) {
+        if (!$(e.target).closest("#searchOverlay, #searchButton, #searchButton *").length) {
+            $("#searchOverlay").fadeOut(200);
+        }
+        });
     });
   });
 
@@ -144,7 +151,7 @@ const profilePic = $(".profile-pic");
 const profileModal = $("<div></div>")
     .html(
     `
-        <article class="flex flex-col bg-white h-[190px] w-[250px]">
+        <article class="flex flex-col bg-white h-fit w-[230px]">
             <header class="flex flex-col">
                 <h2 class="name w-full text-lg font-medium text-center text-green-900 h-[23px]">
                     Name
@@ -152,29 +159,45 @@ const profileModal = $("<div></div>")
                 <p class="email w-full text-base text-center h-[31px] text-green-950">Email</p>
             </header>
 
-            <nav class="flex flex-wrap gap-10 justify-center items-center w-full">
+            <nav class="flex flex-col gap-3 justify-center items-center w-full">
                 <button
-                    class="flex relative justify-center items-center bg-red-500 h-[50px] w-[100px]"
+                    class="flex relative justify-center items-center bg-red-500 h-[40px] w-full"
                     aria-label="View Profile"
                 >
-                    <div class="absolute top-0 h-5 bg-red-500 w-[100px]"></div>
-                    <span class="relative text-xl text-white z-[1]">Profile</span>
+                    <div class="absolute top-0 h-4 bg-red-500 w-[90px]"></div>
+                    <span class="relative text-lg text-white z-[1]">Profile</span>
                 </button>
 
                 <button
-                    class="flex relative justify-center items-center bg-red-500 h-[46px] w-[100px]"
+                    class="flex relative justify-center items-center bg-red-500 h-[40px] w-full"
                     aria-label="Open Settings"
                 >
-                    <div class="absolute top-0 h-5 bg-red-500 w-[100px]"></div>
-                    <span class="relative text-xl text-center text-white z-[1]">Settings</span>
+                    <div class="absolute top-0 h-4 bg-red-500 w-[90px]"></div>
+                    <span class="relative text-lg text-center text-white z-[1]">Settings</span>
                 </button>
 
                 <button
-                    class="logout-button flex relative justify-center items-center bg-red-500 h-[46px] w-[100px]"
+                    class="flex relative justify-center items-center bg-red-500 h-[40px] w-full"
+                    aria-label="FAQ"
+                >
+                    <div class="absolute top-0 h-4 bg-red-500 w-[90px]"></div>
+                    <span class="relative text-lg text-white z-[1]">FAQ</span>
+                </button>
+
+                <button
+                    class="flex relative justify-center items-center bg-red-500 h-[40px] w-full"
+                    aria-label="Contact us for any issues"
+                >
+                    <div class="absolute top-0 h-4 bg-red-500 w-[90px]"></div>
+                    <span class="relative text-lg text-white z-[1]">Contact</span>
+                </button>
+
+                <button
+                    class="logout-button flex relative justify-center items-center bg-red-500 h-[40px] w-full"
                     aria-label="Logout from account"
                 >
-                    <div class="absolute top-0 h-5 bg-red-500 w-[100px]"></div>
-                    <span class="relative text-xl text-white z-[1]">Logout</span>
+                    <div class="absolute top-0 h-4 bg-red-500 w-[90px]"></div>
+                    <span class="relative text-lg text-white z-[1]">Logout</span>
                 </button>
             </nav>
         </article>
@@ -182,8 +205,8 @@ const profileModal = $("<div></div>")
     )
     .css({
     position: "absolute",
-    top: "20%",
-    right: "0.5%",
+    top: "16%",
+    right: "0.1%",
     display: "none",
     });
 

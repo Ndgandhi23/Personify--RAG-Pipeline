@@ -29,27 +29,9 @@ app.config["MONGO_URI"] = (
 mongo = PyMongo(app)
 # Create indexes for app on email + company -> mongo.db.applications.create_index([("email", 1)], unique=True)
 
-# Update CORS configuration to allow requests from localhost:3000 (or your frontend port)
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "http://localhost:5500",  # Live server default port
-            "http://127.0.0.1:5500"   # Localhost with IP address
-        ],
-        "supports_credentials": True
-    }
-})
-
-
-
-# Update Socket.IO CORS configuration
-socketio = SocketIO(app, cors_allowed_origins=[
-    "http://localhost:3000",
-    "http://localhost:5500",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5500"
-])
-sock = Sock(app)  # Setting up the socket object
+CORS(app, supports_credentials = True)  # Allow requests from your frontend
+socketio = SocketIO(app, cors_allowed_origins="*")
+sock = Sock(app) #Setting up the socket object
 
 users = [
     {"id": 1, "name": "Alice", "email": "alice@example.com"},
@@ -133,7 +115,18 @@ def filter_applications():
         }), 200
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
-    
+
+@app.route('/addquestion', methods=['POST'])
+def add_question():
+    if request.is_json:
+        data = request.get_json()
+        print(data)
+
+        return jsonify({"success": True, "applications": data }), 200 #Obv change what applications is set to in this case!
+    else:
+        return jsonify({"error": "Request must be JSON"}), 400
+
+
 #Manually adds job statuses based on company, job, email link, and status 
 @app.route('/jobstatuses', methods=['POST'])
 def jobstatus_manual():
