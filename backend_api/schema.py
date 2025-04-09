@@ -32,3 +32,15 @@ class Application:
             "role": self.role,
             "status": self.status
         }
+
+#Question Schema
+class Question:
+    def __init__(self, question, answer=None):
+        self.question = question  # The question text
+        self.answer = answer      # The answer to the question (optional)
+
+    def to_dict(self):
+        return {
+            "question": self.question,
+            "answer": self.answer
+        }

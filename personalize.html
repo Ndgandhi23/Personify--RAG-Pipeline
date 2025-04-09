@@ -83,7 +83,7 @@
           </button>
         </div>
       </div>
-
+      
       <!-- Mobile Menu Button -->
       <button
         id="mobileMenuButton"
@@ -99,30 +99,38 @@
       >
         <div class="bg-white w-64 h-full">
           <div class="p-4 space-y-2">
-            <button
-              data-tab="faq"
-              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
-            >
-              FAQ
-            </button>
-            <button
-              data-tab="contact"
-              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
-            >
-              Contact Us
-            </button>
-            <button
-              data-tab="profile"
-              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
-            >
-              Profile
-            </button>
-            <button
-              data-tab="settings"
-              class="mobile-menu-button flex items-center space-x-2 w-full p-3 rounded-lg transition-colors"
-            >
-              Settings
-            </button>
+            <div class="space-y-2">
+              <button
+                class="flex justify-center items-center bg-red-500 h-10 w-full rounded text-white text-lg"
+                aria-label="View Profile"
+              >
+                Profile
+              </button>
+              <button
+                class="flex justify-center items-center bg-red-500 h-10 w-full rounded text-white text-lg"
+                aria-label="Open Settings"
+              >
+                Settings
+              </button>
+              <button
+                class="flex justify-center items-center bg-red-500 h-10 w-full rounded text-white text-lg"
+                aria-label="FAQ"
+              >
+                FAQ
+              </button>
+              <button
+                class="flex justify-center items-center bg-red-500 h-10 w-full rounded text-white text-lg"
+                aria-label="Contact us for any issues"
+              >
+                Contact
+              </button>
+              <button
+                class="logout-button flex justify-center items-center bg-red-500 h-10 w-full rounded text-white text-lg"
+                aria-label="Logout from account"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -133,25 +141,11 @@
         <section id="faqSection" class="tab-content">
           <div class = "flex justify-between">
               <h2 class="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
-            <button id="addQuestionButton" class="mb-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-              +
-            </button>
           </div>
-        <!-- New Question Form (hidden by default) -->
-        <div id="newQuestionForm" class="mb-4 hidden">
-          <input
-            type="text"
-            id="newQuestionInput"
-            placeholder="Enter your question"
-            class="w-full border p-2 rounded mb-2"
-          />
-          <button id="submitQuestionButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Submit Question
-          </button>
-        </div>
         <!---Questions List-->
           <div class="space-y-4">
             <div class="faq-item border p-4 rounded">
+              <!---Question-->
               <div
                 class="faq-question cursor-pointer flex justify-between"
                 data-index="0"
@@ -159,9 +153,11 @@
                 <span class="font-semibold">What is Personify?</span>
                 <span class="faq-toggle">+</span>
               </div>
+              <!---Answer-->
               <div class="faq-answer hidden mt-2">
                 Personify is a platform that helps you manage and organize your
-                personal and professional life effectively.
+                job applications effectively without the need for long spreadsheets
+                and constantly checking your emails.
               </div>
             </div>
             <div class="faq-item border p-4 rounded">
@@ -173,8 +169,31 @@
                 <span class="faq-toggle">+</span>
               </div>
               <div class="faq-answer hidden mt-2">
-                Simply create an account, complete your profile, and start
-                exploring our features!
+                Once you register as a Personify user, you should be able to see
+                your list of applications scanned from your email account.
+                Click on the search engine to filter out your applications for
+                easier navigation, and explore the other pages in our account!
+                Hope you enjoy our product!
+              </div>
+            </div>
+            <div class="faq-item border p-4 rounded">
+              <div
+                class="faq-question cursor-pointer flex justify-between"
+                data-index="2"
+              >
+                <span class="font-semibold">What tech stack did we use for this project? (Inspiration moment)</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer hidden mt-2">
+                The tech stack we used for this project includes:
+                <ul class="list-disc pl-5">
+                    <li><strong>Frontend:</strong> Figma, HTML, CSS (TailwindCSS), JavaScript (jQuery)</li>
+                    <li><strong>Backend RESTful API:</strong> Flask</li>
+                    <li><strong>Email Scanning:</strong> Gmail API</li>
+                    <li><strong>Deriving Application Statuses:</strong> NLP</li>
+                    <li><strong>Database:</strong> MongoDB</li>
+                    <li><strong>Authentication:</strong> Google OAuth 2.0, JWT</li>
+                </ul>
               </div>
             </div>
             <div class="faq-item border p-4 rounded">
@@ -187,7 +206,12 @@
               </div>
               <div class="faq-answer hidden mt-2">
                 Yes! We use industry-standard encryption and security measures
-                to protect your data.
+                to protect your data. Some of the measures include:
+                <ul class="list-disc pl-5">
+                  <li>Secure MFA</li>
+                  <li>Encrypted storage (Client-Side = SHA-256, Server-Side = MongoDB Encryption mechanisms)</li>
+                  <li>Regular security audits to ensure your information remains private and safe</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -197,26 +221,18 @@
         <section id="contactSection" class="tab-content hidden">
           <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
           <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow">
-            <form class="space-y-6">
-              <div>
-                <label class="block">Name</label>
-                <input type="text" class="w-full border p-2 rounded" />
-              </div>
-              <div>
-                <label class="block">Email</label>
-                <input type="email" class="w-full border p-2 rounded" />
-              </div>
+            <form class="contact-form space-y-6">
               <div>
                 <label class="block">Subject</label>
-                <input type="text" class="w-full border p-2 rounded" />
+                <input type="text" id = "subject" class="w-full border p-2 rounded" />
               </div>
               <div>
                 <label class="block">Message</label>
-                <textarea rows="4" class="w-full border p-2 rounded"></textarea>
+                <textarea rows="4" id = "message" class="w-full border p-2 rounded"></textarea>
               </div>
               <button
                 type="button"
-                class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
+                class="send-message w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
               >
                 Send Message
               </button>
@@ -330,7 +346,8 @@
 
     <!-- Additional scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/home.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="js/personalize.js"></script>
+    <script src="js/profile.js"></script>
   </body>
 </html>

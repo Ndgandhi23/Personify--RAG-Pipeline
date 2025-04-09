@@ -13,12 +13,16 @@ from dotenv import load_dotenv
 import os
 import schema
 import traceback
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
 
 #Load environment variables first into memory.
-
+load_dotenv()
 #Flask-PyMongo connection(s)
 app = Flask(__name__) #Create the Flask object
-load_dotenv()
 app.config["MONGO_URI"] = (
     f"mongodb+srv://{os.getenv('MONGO_USERNAME')}:"
     f"{os.getenv('MONGO_PASSWORD')}@"
@@ -29,9 +33,19 @@ app.config["MONGO_URI"] = (
 mongo = PyMongo(app)
 # Create indexes for app on email + company -> mongo.db.applications.create_index([("email", 1)], unique=True)
 
-CORS(app, supports_credentials = True)  # Allow requests from your frontend
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials = True)  # Allow requests from your frontend
 socketio = SocketIO(app, cors_allowed_origins="*")
 sock = Sock(app) #Setting up the socket object
+
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = flask.make_response()
+        response.headers.add("Access-Control-Allow-Origin", "http://127.0.0.1:5500")
+        response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response
 
 users = [
     {"id": 1, "name": "Alice", "email": "alice@example.com"},
@@ -121,10 +135,48 @@ def add_question():
     if request.is_json:
         data = request.get_json()
         print(data)
+        try:
+            # Refer to questions collection from mongodb database
+            questions_collection = mongo.db.questions
 
-        return jsonify({"success": True, "applications": data }), 200 #Obv change what applications is set to in this case!
+            # Check if the question already exists in the collection
+            existing_question = questions_collection.find_one({"question": data.get("question")})
+            if existing_question:
+                return jsonify({
+                    "status": "error",
+                    "message": "The question already exists, please ask another question."
+                }), 400
+
+            # Add the question to the collection using Question Schema
+            # Ivan: Train a model to generate the answer to this question (for automation).
+            new_question = schema.Question(
+                question=data.get("question"),
+                answer="Thank you for answering this question, we will come back to you at a later time."
+            ).to_dict()
+            questions_collection.insert_one(new_question)
+
+            # Return a success message
+            return jsonify({
+                "status": "success",
+                "message": "Question added successfully"
+            }), 200
+        except Exception as e:
+            return jsonify({"error": f"Database error: {str(e)}"}), 500
     else:
         return jsonify({"error": "Request must be JSON"}), 400
+
+@app.route('/new_question', methods=['POST'])
+def new_question():
+    try:
+        # Get the new question from the request
+        question = request.json
+
+        # Emit the question to the frontend via WebSocket
+        socketio.emit('new_question', question)
+        
+        return jsonify({"success": True, "message": "Question emitted to frontend."}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 #Manually adds job statuses based on company, job, email link, and status 
@@ -329,6 +381,58 @@ def forgot_password():
             }), 500        
     else:
         return jsonify({"error": "Request must be JSON"}), 400
+    
+# Function to retrieve the secrets from AWS Secrets Manager for securely contacting me.
+def get_email_secret():
+    try:
+        client = boto3.client(
+            "secretsmanager",
+            region_name="us-east-1",
+            aws_access_key_id=os.getenv("ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        )
+        response = client.get_secret_value(
+            SecretId="arn:aws:secretsmanager:us-east-1:412381777713:secret:Email_Password-uQRzUF",
+            VersionStage="AWSCURRENT",
+        )
+        return json.loads(response["SecretString"])
+    except (BotoCoreError, ClientError) as error:
+        print(f"Error retrieving secret: {error}")
+        raise error
+
+@app.route('/send_email', methods=['POST'])
+def send_email():
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
+
+    data = request.get_json()
+    name = data.get("name")
+    email = data.get("email")
+    subject = data.get("subject")
+    message = data.get("message")
+
+    try:
+        secret = get_email_secret()
+        email_password = secret["PASSWORD"]
+
+        # Set up the email
+        msg = MIMEMultipart()
+        msg["From"] = name
+        msg["Reply-To"] = email
+        msg["To"] = "nikhilsai.munagala@gmail.com"
+        msg["Subject"] = subject
+        msg.attach(MIMEText(message, "plain"))
+
+        # Send the email
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            #Authenticate to the SMTP server first
+            server.login("nikhilsai.munagala@gmail.com", email_password)
+            #Before sending the email
+            server.sendmail(email, "nikhilsai.munagala@gmail.com", msg.as_string())
+
+        return jsonify({"message": "Email sent successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to send email: {str(e)}"}), 500
     
 #Start the Flask app
 if __name__ == '__main__':
