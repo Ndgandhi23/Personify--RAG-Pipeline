@@ -15,6 +15,10 @@
     />
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- i18next library for language translation -->
+    <script src="https://unpkg.com/i18next@21.6.16/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend@1.4.0/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@6.1.4/i18nextBrowserLanguageDetector.min.js"></script>
     <style>
       /* Custom font styles */
       .font-archivo {
@@ -247,20 +251,21 @@
             class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow space-y-6"
           >
             <div>
-              <label class="block">Username</label>
-              <input type="text" class="w-full border p-2 rounded" />
-            </div>
-            <div>
               <label class="block">Email</label>
-              <input type="email" class="w-full border p-2 rounded" />
+              <p class = "emailDiv">
+                Your Email
+              </p>
             </div>
-            <div>
-              <label class="block">Current Password</label>
-              <input type="password" class="w-full border p-2 rounded" />
+            <div class="space-y-4">
+              <label class="block text-red-500">Change Password</label>
+              <input type="password" class="w-full border p-2 rounded" placeholder="New Password" />
+                <button
+                type="button"
+                class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 w-fit text-left"
+                >
+                Change Password
+                </button>
             </div>
-            <button class="text-red-500 hover:text-red-600">
-              Change Password
-            </button>
             <button
               type="button"
               class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
@@ -283,10 +288,12 @@
                   Select your preferred language
                 </p>
               </div>
-              <select class="w-32 border p-2 rounded">
+              <select id = "languageSelector" class="w-32 border p-2 rounded">
                 <option>English</option>
                 <option>Spanish</option>
                 <option>French</option>
+                <option>German</option>
+                <option>Chinese</option>
               </select>
             </div>
             
@@ -349,5 +356,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="js/personalize.js"></script>
     <script src="js/profile.js"></script>
+    <!-- <script src="js/translate.js"></script> --> 
+    <script src="js/darkmode.js"></script>
   </body>
 </html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Personify - Job Application Tracking</title>
+    <title id = "tab-title">Personify - Job Application Tracking</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;500&display=swap"
       rel="stylesheet"
@@ -14,6 +14,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- i18next library for language translation -->
+    <script src="https://unpkg.com/i18next@21.6.16/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend@1.4.0/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@6.1.4/i18nextBrowserLanguageDetector.min.js"></script>
     <style>
       .font-archivo {
         font-family: "Archivo Narrow", sans-serif;
@@ -29,7 +33,7 @@
     <header class="flex justify-center w-full h-20 bg-black bg-opacity-90">
       <nav class="flex justify-between items-center px-5 py-0 w-full max-w-[1512px] max-md:px-4 max-md:py-0 max-sm:px-2.5 max-sm:py-0">
         <h1 class="text-3xl text-white max-md:text-4xl max-sm:text-3xl">
-          <a href="javascript:void(0);" onclick="navigateTo('newhome.html')" class="text-white hover:bg-gray-700 px-2 py-1 rounded">Personify</a>
+          <a href="javascript:void(0);" onclick="navigateTo('newhome.html')" class="text-white hover:bg-gray-700 px-2 py-1 rounded" id = "nav-brand-title">Personify</a>
         </h1>
         <div class="pt-1.5 pr-3 pb-5 pl-0">
           <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/9b46db6a4763aeabba03deb2a1b1a0fb2164ea25" alt="Profile" class="profile-pic object-cover h-[90px] w-[90px] max-sm:w-20 max-sm:h-20" />
@@ -42,7 +46,7 @@
       class="flex flex-col gap-1 items-center mx-auto my-0 max-w-[1382px] max-md:px-4 max-md:py-0"
     >
       <h2
-        class="text-5xl italic text-center text-gray-300 max-md:text-4xl max-sm:text-3xl"
+        id = "main-title" class="text-5xl italic text-center text-gray-300 max-md:text-4xl max-sm:text-3xl"
       >
         Personify
       </h2>
@@ -133,7 +137,7 @@
   </div>
 </div>
 </main>
-  <section class="p-5 text-2xl text-black">
+  <section class="view-jobs p-5 text-2xl text-black">
       <p>View <span class="font-bold">X</span> Jobs</p>
       <div class="grid grid-cols-4 text-[1.5rem] mt-[3rem] ml-[10%]">
           <div class="underline">Date</div>
@@ -151,6 +155,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/home.js"></script>
     <script src="js/profile.js"></script>
+    <!-- <script src="js/translate.js"></script> --> 
+    <script src="js/darkmode.js"></script>
     <script src="finisher-header.es5.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       new FinisherHeader({

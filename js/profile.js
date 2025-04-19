@@ -1,7 +1,7 @@
 //Profile modal function for opening up profile modal
 // Displaying profile modal when clicking on the profile pic.
 const profilePic = $(".profile-pic");
-const profileModal = $("<div></div>")
+const profileModal = $('<div class = "profile-info"></div>')
     .html(
     `
         <article class="flex flex-col bg-white h-fit w-[230px]">
@@ -70,49 +70,57 @@ profilePic.click(function (event) {
     profileModal.toggle();
     if (profileModal.is(":visible")) {
         $(document).ready(function () {
-            const userEmailElement = $(".email"); //Get the current user's email!
+            const userEmailElement = $(".email"); // Get the current user's email!
             const nameElement = $(".name");
             const logoutButton = $(".logout-button");
         
-            //Get email from URL parameters
+            // Get email from URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const email = urlParams.get("email");
         
-            //If the user is not valid
+            // If the user is not valid
             if (!email) {
                 window.location.href = "/login.html";
                 return;
             }
         
-            //How do we get the name and the profile pic? (Maybe from google oauth -> Ask Neil for later?)
-            
-            //Store in localStorage (find a better way pls!)
+            // Store in localStorage (find a better way pls!)
             localStorage.setItem("userEmail", decodeURIComponent(email));
-            //Display user email in navbar
+            // Display user email in navbar
             if (userEmailElement.length) {
                 userEmailElement.text(localStorage.getItem("userEmail"));
             }
         });
 
-        //Set routing for the other four buttons 
-
+        // Set routing for the other four buttons 
         const logoutButton = $('.logout-button');
-        if (logoutButton) {
-            //Logout button functionality
+        if (logoutButton.length) {
+            // Logout button functionality
             logoutButton.click(function () {
-                //Redirect back to the login page.
-                localStorage.removeItem("userEmail"); //Remove before logging out.
-                window.location.href = "/login.html";
-                /*
-                //PLEASE FIX the below part -> Once you logout, do not go back to home page with your email!
-                history.pushState(null, null, "/newhome.html");
-                // Listen for the back button or any popstate event.
-                // When that happens, force a redirect to the home page.
-                window.addEventListener("popstate", function (event) {
-                    window.location.href = "/newhome.html";
+                // Redirect back to the login page.
+                localStorage.removeItem("userEmail"); // Remove before logging out.
+                // Make a POST request to the logout method
+                $.ajax({
+                    url: 'http://127.0.0.1:5000/logout',
+                    type: 'GET',
+                    success: function (response) {
+                        window.location.href = "/login.html"; 
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error: " + error);
+                    }
                 });
-                */
             });
+
+            /*
+            // PLEASE FIX the below part -> Once you logout, do not go back to home page with your email!
+            history.pushState(null, null, "/newhome.html");
+            // Listen for the back button or any popstate event.
+            // When that happens, force a redirect to the home page.
+            window.addEventListener("popstate", function (event) {
+                window.location.href = "/newhome.html";
+            });
+            */
         } else {
             console.log("Logout button not working.");
         }

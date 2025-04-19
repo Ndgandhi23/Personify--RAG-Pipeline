@@ -1,5 +1,12 @@
 //Search engine functionality
 $(document).ready(function () {
+    // Check to see if email is present in URL (Otherwise, redirect them to login page.)
+    const urlParams = new URLSearchParams(window.location.search);
+    const userEmail = urlParams.get("email");
+    if (!userEmail) {
+      window.location.href = "/login.html"; // Redirect to login page if email is not present
+    }
+    
     // Ensure the search overlay is hidden initially.
     $("#searchOverlay").hide();
     

@@ -47,6 +47,7 @@ const displayMessage = ($container, message, type = 'error') => {
   }, 5000);
 };
 
+//Actions to perform when initially loading the document.
 $(document).ready(function () {
   // Tab switching logic
   const $tabButtons = $(".sidebar-button, .mobile-menu-button, .tab-button");
@@ -114,6 +115,31 @@ $(document).ready(function () {
       });
     }
   });
+  //Profile Information Page
+  //Populating the email when the document is ready.
+  $(".emailDiv").text($(".profile-info .email").text());
+
+  const email = $(".emailDiv").text();
+
+  // Make an Ajax request to the /get_password endpoint to
+  // fetch the password from the database given the email.
+  $.ajax({
+    url: 'http://127.0.0.1:5000/get_password',
+    type: 'POST',
+    data: JSON.stringify({ email: email }),
+    contentType: 'application/json',
+    success: function (response) {
+      if (response && response.password) {
+        $(".passwordDiv").text(response.password);
+      } else {
+        displayMessage($(".profile-info"), 'Password not found for the given email.', 'error');
+      }
+    },
+    error: function (xhr, status, error) {
+      console.log("Error: " + error);
+      displayMessage($(".profile-info"), 'Failed to fetch password. Please try again.', 'error');
+    }
+  });
 });
 
 //Function that sends an email when you click on the submit button.
@@ -169,8 +195,8 @@ const sendEmail = (person_name, email, subj, msg) => {
 // Event listener for contact form submissions
 $(".send-message").on("click", function () {
   //Retrieve the basic/necessary fields for making contact form submissions.
-  const personName = $(".profile-pic .name").text(); //Get name = text of name field
-  const emailAddress = $(".profile-pic .email").text();
+  const personName = $(".profile-info .name").text(); //Get name = text of name field
+  const emailAddress = $(".profile-info .email").text();
   const subject = $("#subject").val(); //Get value of subject input field
   const message = $("#message").val();
 
