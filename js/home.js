@@ -1,11 +1,25 @@
+//Redirect to home and personalize pages.
+const redirectToHome = (email) => {
+  // Encode email to safely pass in URL
+  const encodedEmail = encodeURIComponent(email);
+  window.location.href = `/newhome.html?email=${encodedEmail}`;
+}
+
 //Search engine functionality
 $(document).ready(function () {
     // Check to see if email is present in URL (Otherwise, redirect them to login page.)
     const urlParams = new URLSearchParams(window.location.search);
     const userEmail = urlParams.get("email");
-    if (!userEmail) {
+    //Validate user email to see if valid and currently logged in state.
+    if (!userEmail && localStorage.get("email") !== userEmail) {
       window.location.href = "/login.html"; // Redirect to login page if email is not present
     }
+
+    // When we click on the element with class new-titl, call the redirectToHome function.
+    $(".new-titl").click(function () {
+      const email = userEmail; // Use the email extracted from the URL
+      redirectToHome(email);
+    });
     
     // Ensure the search overlay is hidden initially.
     $("#searchOverlay").hide();

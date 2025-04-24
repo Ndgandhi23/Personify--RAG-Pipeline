@@ -18,6 +18,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import handling
+import requests
+
 
 #Load environment variables first into memory.
 load_dotenv()
@@ -446,6 +448,18 @@ def get_password():
         decrypted_password = schema.User.from_mongo_document(schema.User, user).decrypt(user["original_password"])
         return jsonify({"password": decrypted_password}), 200
     return jsonify({"error": "User not found"}), 404
+
+#Endpoint that handles automatic key rotation every 90 days
+#running in the background.
+@app.route('/rotate-keys', methods=['POST'])
+def rotate_keys():
+    data = request.get_json()
+    if 'SubscribeURL' in data:
+        # Confirm the subscription
+        requests.get(data['SubscribeURL'])
+        return jsonify({"message": "Subscription confirmed"}), 200
+    # Handle key rotation logic here
+    return jsonify({"message": "Key rotation triggered"}), 200
 #Start the Flask app
 if __name__ == '__main__':
     socketio.run(app, debug=True)

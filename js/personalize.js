@@ -47,8 +47,20 @@ const displayMessage = ($container, message, type = 'error') => {
   }, 5000);
 };
 
+//Redirect to home page when clicking on header.
+const redirectToHome = (email) => {
+  // Encode email to safely pass in URL
+  const encodedEmail = encodeURIComponent(email);
+  window.location.href = `/newhome.html?email=${encodedEmail}`;
+}
+
 //Actions to perform when initially loading the document.
 $(document).ready(function () {
+  // When we click on the element with class new-titl, call the redirectToHome function.
+  $(".new-titl").click(function () {
+    const email = userEmail; // Use the email extracted from the URL
+    redirectToHome(email);
+  });
   // Tab switching logic
   const $tabButtons = $(".sidebar-button, .mobile-menu-button, .tab-button");
   const $tabContents = $(".tab-content");
@@ -74,8 +86,27 @@ $(document).ready(function () {
     }
   });
 
-  // Initial tab (FAQ)
-  showTab("faq");
+  //When requests enter the personalize page, display the tab accordingly by section id.
+  const urlParams = new URLSearchParams(window.location.search);
+  const userEmail = urlParams.get("email");
+  //Validate user email to see if valid and currently logged in state.
+  if (!userEmail && localStorage.get("email") !== userEmail) {
+    window.location.href = "/login.html"; // Redirect to login page if email is not present
+  }
+  // Get the id from the URL
+  const userId = window.location.hash.substring(1); // Get the part after the hashtag
+  console.log(userId);
+  // Create an if-else statement for performing different actions based on the id (4 values, 1 default)
+  if (userId === "profileSection") {
+    //Toggle the profile section.
+    showTab("profile");
+  } else if (userId === "settingsSection") {
+    showTab("settings");
+  } else if (userId === "contactSection") {
+    showTab("contact");
+  } else {
+    showTab("faq"); //By default
+  }
 
   // Mobile menu toggling
   $("#mobileMenuButton").on("click", function () {
@@ -115,6 +146,7 @@ $(document).ready(function () {
       });
     }
   });
+
   //Profile Information Page
   //Populating the email when the document is ready.
   $(".emailDiv").text($(".profile-info .email").text());
@@ -123,6 +155,7 @@ $(document).ready(function () {
 
   // Make an Ajax request to the /get_password endpoint to
   // fetch the password from the database given the email.
+  /*
   $.ajax({
     url: 'http://127.0.0.1:5000/get_password',
     type: 'POST',
@@ -140,6 +173,7 @@ $(document).ready(function () {
       displayMessage($(".profile-info"), 'Failed to fetch password. Please try again.', 'error');
     }
   });
+  */
 });
 
 //Function that sends an email when you click on the submit button.

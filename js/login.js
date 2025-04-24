@@ -192,6 +192,7 @@ button.addEventListener('click', () => {
 //Function redirecting to the home page after successful login.
 const redirectToHome = (email) => {
     // Encode email to safely pass in URL
+    localStorage.setItem("email", email);
     const encodedEmail = encodeURIComponent(email);
     window.location.href = `/newhome.html?email=${encodedEmail}`;
 }

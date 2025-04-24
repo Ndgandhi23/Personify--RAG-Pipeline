@@ -137,3 +137,74 @@ $(document).click(function (event) {
     profileModal.hide();
     }
 });
+
+//Methods to perform redirection on pages from profile.
+const redirectToProfile = (email) => {
+    // Encode email to safely pass in URL
+    const encodedEmail = encodeURIComponent(email);
+    window.location.href = `/personalize.html?email=${encodedEmail}#profileSection`;
+}
+
+const redirectToSettings = (email) => {
+    const encodedEmail = encodeURIComponent(email);
+    window.location.href = `/personalize.html?email=${encodedEmail}#settingsSection`;
+}
+
+const redirectToFAQ = (email) => {
+    const encodedEmail = encodeURIComponent(email);
+    window.location.href = `/personalize.html?email=${encodedEmail}#faqSection`;
+}
+
+const redirectToContact = (email) => {
+    const encodedEmail = encodeURIComponent(email);
+    window.location.href = `/personalize.html?email=${encodedEmail}#contactSection`;
+}
+
+//Setting up event listeners for routing.
+const viewProfileButton = $('button[aria-label="View Profile"]');
+if (viewProfileButton.length) {
+    viewProfileButton.click(function () {
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            redirectToProfile(email);
+        } else {
+            console.log("User email not found in localStorage.");
+        }
+    });
+}
+
+const settingsButton = $('button[aria-label="Open Settings"]');
+if (settingsButton.length) {
+    settingsButton.click(function () {
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            redirectToSettings(email);
+        } else {
+            console.log("User email not found in localStorage.");
+        }
+    });
+}
+
+const faqButton = $('button[aria-label="FAQ"]');
+if (faqButton.length) {
+    faqButton.click(function () {
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            redirectToFAQ(email);
+        } else {
+            console.log("User email not found in localStorage.");
+        }
+    });
+}
+
+const contactButton = $('button[aria-label="Contact us for any issues"]');
+if (contactButton.length) {
+    contactButton.click(function () {
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            redirectToContact(email);
+        } else {
+            console.log("User email not found in localStorage.");
+        }
+    });
+}
