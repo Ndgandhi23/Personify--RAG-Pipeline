@@ -3,36 +3,36 @@ let lastMessageTime = 0;
 const COOLDOWN_PERIOD = 5010; // 5 seconds in milliseconds
 
 // Function that displays a message in the login system.
-const displayMessage = ($container, message, type = 'error') => {
+const displayMessage = ($container, message, type = "error") => {
   // Check if enough time has passed since last message
   const currentTime = Date.now();
   if (currentTime - lastMessageTime < COOLDOWN_PERIOD) {
     return;
   }
   // Remove any existing messages first
-  $container.find('.message').remove();
+  $container.find(".message").remove();
   // Create and style new message
-  const $messageElement = $('<p></p>', {
+  const $messageElement = $("<p></p>", {
     class: `message ${type}`,
     text: message,
     css: {
-      color: type === 'error' ? 'red' : 'green',
-      padding: '0 10px', // Vertically center the message through padding on top + bottom!
-      borderRadius: '5px',
-      fontWeight: 'bold',
-      margin: '0',
+      color: type === "error" ? "red" : "green",
+      padding: "0 10px", // Vertically center the message through padding on top + bottom!
+      borderRadius: "5px",
+      fontWeight: "bold",
+      margin: "0",
       opacity: 1,
-      transition: 'opacity 0.5s ease',
-      display: 'inline-block',
-      verticalAlign: 'middle', // Vertically center the message
+      transition: "opacity 0.5s ease",
+      display: "inline-block",
+      verticalAlign: "middle", // Vertically center the message
     },
   });
 
   // Ensure the container has proper alignment
   $container.css({
-    position: 'relative',
-    display: 'flex-col',
-    alignItems: 'center', // Vertically center content inside the container
+    position: "relative",
+    display: "flex-col",
+    alignItems: "center", // Vertically center content inside the container
   });
 
   $container.append($messageElement);
@@ -40,11 +40,11 @@ const displayMessage = ($container, message, type = 'error') => {
 
   // Auto-remove after 5 seconds
   setTimeout(() => {
-    $messageElement.css('opacity', '0');
+    $messageElement.css("opacity", "0");
     setTimeout(() => {
       $messageElement.remove();
     }, 500);
-  }, 5000);
+  }, 8000);
 };
 
 //Redirect to home page when clicking on header.
@@ -52,7 +52,7 @@ const redirectToHome = (email) => {
   // Encode email to safely pass in URL
   const encodedEmail = encodeURIComponent(email);
   window.location.href = `/newhome.html?email=${encodedEmail}`;
-}
+};
 
 //Actions to perform when initially loading the document.
 $(document).ready(function () {
@@ -157,7 +157,7 @@ $(document).ready(function () {
   // fetch the password from the database given the email.
   /*
   $.ajax({
-    url: 'http://127.0.0.1:5000/get_password',
+    url: 'http://127.0.0.1:8000/get_password',
     type: 'POST',
     data: JSON.stringify({ email: email }),
     contentType: 'application/json',
@@ -178,51 +178,61 @@ $(document).ready(function () {
 
 //Function that sends an email when you click on the submit button.
 const sendEmail = (person_name, email, subj, msg) => {
-  const tempDiv = document.getElementById('status');
-   //Basic validation of contact page fields.
-   if (subj === ''){
-    const invalidSubjectMsg = '<p style="color: red; padding: 10px; border-radius: 5px; font-weight: bold;">' +
-    'Please provide a subject.' +
-    '</p>';
+  const tempDiv = document.getElementById("status");
+  //Basic validation of contact page fields.
+  if (subj === "") {
+    const invalidSubjectMsg =
+      '<p style="color: red; padding: 10px; border-radius: 5px; font-weight: bold;">' +
+      "Please provide a subject." +
+      "</p>";
     tempDiv.innerHTML = invalidSubjectMsg;
     return;
-  } else if (msg === ''){
-      const invalidMsg = '<p style="color: red; padding: 10px; border-radius: 5px; font-weight: bold;">' +
-      'Please provide a message.' +
-      '</p>';
-      tempDiv.innerHTML = invalidMsg;
-      return;
+  } else if (msg === "") {
+    const invalidMsg =
+      '<p style="color: red; padding: 10px; border-radius: 5px; font-weight: bold;">' +
+      "Please provide a message." +
+      "</p>";
+    tempDiv.innerHTML = invalidMsg;
+    return;
   }
 
   //Preparing the email data for communicating the api to send the email.
   const emailData = {
-    name: person_name, 
-    email: email, 
-    subject: subj, 
-    message: msg
-  }
+    name: person_name,
+    email: email,
+    subject: subj,
+    message: msg,
+  };
 
   //Make a post request to the contact endpoint.
   $.ajax({
-    url: 'http://127.0.0.1:5000/send_email',
-    type: 'POST',
+    url: "http://127.0.0.1:8000/send_email",
+    type: "POST",
     data: JSON.stringify(emailData),
-    contentType: 'application/json',
+    contentType: "application/json",
     success: function (response) {
       // Clear the fields (variables + input fields)
-      $('#personName').val('');
-      $('#emailAddress').val('');
-      $('#subject').val('');
-      $('#message').val('');
+      $("#personName").val("");
+      $("#emailAddress").val("");
+      $("#subject").val("");
+      $("#message").val("");
 
       // Add a success message using displayMessage
-      displayMessage($(".contact-form"), 'You will receive an email back within 1-2 business days. Thank you for contacting us!', 'success');
+      displayMessage(
+        $(".contact-form"),
+        "You will receive an email back within 1-2 business days. Thank you for contacting us!",
+        "success"
+      );
     },
     error: function (xhr, status, error) {
       console.log("Error: " + error);
       // Have an email message prepared just in case the email doesn't get sent.
-      displayMessage($(".contact-form"), 'Unexpected email submission error, please try again.', 'error');
-    }
+      displayMessage(
+        $(".contact-form"),
+        "Unexpected email submission error, please try again.",
+        "error"
+      );
+    },
   });
 };
 

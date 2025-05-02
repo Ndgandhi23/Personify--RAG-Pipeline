@@ -19,6 +19,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import handling
 import requests
+import logging
+from datetime import datetime
+
+
 
 
 #Load environment variables first into memory.
@@ -59,6 +63,28 @@ def handle_preflight():
         response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
         response.headers.add("Access-Control-Allow-Credentials", "true")
         return response
+    
+# Set up logging mechanisms for this application.
+log_directory = "logs"
+os.makedirs(log_directory, exist_ok=True)
+
+# Create a formatter with timestamps
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# File handler - logs to a file with date in the filename
+log_file = os.path.join(log_directory, f"app_{datetime.now().strftime('%Y%m%d')}.log")
+file_handler = logging.FileHandler(log_file)
+file_handler.setFormatter(formatter)
+
+# Console handler - logs to console
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+
+# Create logger
+logger = logging.getLogger('personify-api')
+logger.setLevel(logging.INFO)
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
 
 users = [
     {"id": 1, "name": "Alice", "email": "alice@example.com"},
@@ -134,7 +160,6 @@ def filter_applications():
                     {"email": user_email},
                     {"$set": {"searches": searches}}
                 )
-
         return jsonify({
             "success": True,
             "message": "Applications retrieved successfully",
@@ -347,7 +372,6 @@ def forgot_password():
             # Update the document's password to be the new password
             # Create a schema.User object from the user document
             user_obj = schema.User.from_mongo_document(user)
-            print(user_obj.to_dict())
             
             # Make an AWS KMS call to decrypt User's encrypted_dek
             # Retrieve access_key and secret_access_key from the .env file
@@ -454,12 +478,91 @@ def get_password():
 @app.route('/rotate-keys', methods=['POST'])
 def rotate_keys():
     data = request.get_json()
+    print(f"Received data: {data}")  # Log the full payload
+
     if 'SubscribeURL' in data:
+        logger.info(f"Processing subscription confirmation: {data['SubscribeURL']}")
         # Confirm the subscription
         requests.get(data['SubscribeURL'])
         return jsonify({"message": "Subscription confirmed"}), 200
-    # Handle key rotation logic here
-    return jsonify({"message": "Key rotation triggered"}), 200
+
+    # Handle SNS notification structure
+    if data and 'Type' in data and data['Type'] == 'Notification':
+        try:
+            # Extract the message content
+            message = json.loads(data.get('Message', '{}'))
+            event_name = message.get('eventName')
+
+            # Log the rotation event details
+            logger.info(f"Received KMS event: {event_name}")
+            # More detailed logging for the rotation event.
+            rotated_key_id = message.get('requestParameters', {}).get('keyId')
+            logger.info(f"Key affected: {rotated_key_id}")
+            # Check if this is a KMS key rotation event
+            if event_name and 'Rotate' in event_name:
+                # Implement your key rotation logic here
+                # This should handle re-encrypting user data with the new key
+                logger.info("Key rotation detected, processing...")
+
+                users_collection = mongo.db.users
+                users = users_collection.find()
+                user_count = users_collection.count_documents({})
+                logger.info(f"Processing {user_count} users for key rotation")
+                
+                updated_count = 0
+
+                # For each user document
+                for user in users:
+                    logger.debug(f"Processing user: {user['email']}")
+                    # Creating a new user object from that document
+                    user_obj = schema.User.from_mongo_document(user)
+                    try:
+                        access_key = os.getenv("ACCESS_KEY_ID")
+                        secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+                    except ValueError as e:
+                        return jsonify({
+                            "status": "error",
+                            "message": "AWS credentials are missing in the environment variables."
+                        }), 500
+
+                    # Decrypt the encrypted key from the user object
+                    decrypted_dek = handling.decrypt_dek(user_obj._encrypted_key, access_key, secret_access_key)
+
+                    # Use that to decrypt the user obj's password
+                    user_obj._key = decrypted_dek
+                    decrypted_password = user_obj._decrypt(user_obj.original_password)
+                    user_obj._key = ''
+
+                    # Initialize encryption process again
+                    decrypted_dek = user_obj._initialize_encryption()
+
+                    # Encrypt the obj.password through the obj.key
+                    encrypted_password = user_obj._encrypt(user_obj.original_password)
+
+                    # Discard the key once encrypted (Set to empty)
+                    user_obj._key = ''
+
+                    # Now update the document classified by id
+                    users_collection.update_one(
+                        {"_id": user["_id"]},
+                        {"$set": {
+                            "original_password": encrypted_password,
+                            "_encrypted_key": user_obj._encrypted_key
+                        }}
+                    )
+                    
+                    updated_count += 1
+                    logger.info(f"Successfully re-encrypted data for {updated_count} users")
+                return jsonify({"message": f"Data encrypted successfully after key rotation event: {event_name}"}), 200
+
+        except Exception as e:
+            logger.error(f"Error processing key rotation: {str(e)}", exc_info=True)
+            return jsonify({"error": f"Failed to process notification: {str(e)}"}), 500
+
+    # Unknown format
+    logger.warning(f"Received unknown request format: {data}")
+    return jsonify({"message": "Unknown request format"}), 400
+
 #Start the Flask app
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, port=8000)

@@ -164,7 +164,7 @@ def fetch_email_by_id(service, msg_id):
 
     if company != "not job related":
         print("Sending to process_application endpoint!")
-        resp = requests.post('http://localhost:5000/process_application', json=email_data)
+        resp = requests.post('http://localhost:8000/process_application', json=email_data)
         if resp.ok:
             print(f"Application successfully processed: {resp.json()}")
         else:

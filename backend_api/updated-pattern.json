@@ -1,0 +1,11 @@
+{
+    "source": ["aws.kms"],
+    "detail-type": ["RotateKey", "AWS Service Event via CloudTrail"],
+    "detail": {
+      "eventSource": ["kms.amazonaws.com"],
+      "eventName": ["RotateKey"],
+      "serviceEventDetails": {
+        "keyId": ["cbfde588-df30-4fb0-ae43-8a9b11e53640"]
+      }
+  }
+}

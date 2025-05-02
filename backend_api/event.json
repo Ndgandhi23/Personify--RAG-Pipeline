@@ -1,0 +1,34 @@
+{
+    "version": "0",
+    "id": "e236b7bc-a1d9-4de4-beda-c03b90648c5d",
+    "detail-type": "AWS Service Event via CloudTrail",
+    "source": "aws.kms",
+    "account": "412381777713",
+    "time": "2025-04-29T18:47:05Z",
+    "region": "us-east-1",
+    "resources": [
+        "arn:aws:kms:us-east-1:412381777713:key/cbfde588-df30-4fb0-ae43-8a9b11e53640"
+    ],
+    "detail": {
+        "eventVersion": "1.11",
+        "userIdentity": {
+            "accountId": "412381777713",
+            "invokedBy": "AWS Internal"
+        },
+        "eventSource": "kms.amazonaws.com",
+        "eventName": "RotateKey",
+        "sourceIPAddress": "AWS Internal",
+        "userAgent": "AWS Internal",
+        "requestParameters": null,
+        "responseElements": null,
+        "readOnly": false,
+        "eventType": "AwsServiceEvent",
+        "managementEvent": true,
+        "recipientAccountId": "412381777713",
+        "serviceEventDetails": {
+            "rotationType": "ON_DEMAND",
+            "keyId": "cbfde588-df30-4fb0-ae43-8a9b11e53640"
+        },
+        "eventCategory": "Management"
+    }
+}
