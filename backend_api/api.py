@@ -120,6 +120,7 @@ def filter_applications():
 
     # Restrict to recent search to user's applications
     query = {"user_email": user_email}  
+    print(query)
     
     # Build the search query
     search_term = {}
@@ -142,10 +143,11 @@ def filter_applications():
         if 'status' in data:
             query['status'] = data['status']
             search_term['status'] = data['status']
-
+            
     try:
         # Fetch application results
-        results = list(applications_collection.find(query).limit(5))
+        results = list(applications_collection.find(query))
+        #Convert each application's object id into a string.
         for result in results:
             result['_id'] = str(result['_id'])
 
@@ -200,11 +202,15 @@ def process_application():
         data = request.get_json()
         print(data)
 
-         # Extract the parameters from the JSON
+        # Extract the parameters from the JSON
         fields = ('company', 'date', 'role', 'user_email', 'company_email', 'status')
         company, date, role, user_email, company_email, status = (data.get(field) for field in fields)
 
-        # Insert the application into MongoDB
+        # For the future -> Create a vector based on user email, company, and role to identify application.
+        # Put automation/vectorization code here!
+        
+        # Put automation/vectorization code here!
+        # Insert/Update the application into MongoDB
         try:
             applications_collection = mongo.db.applications
             
@@ -214,11 +220,48 @@ def process_application():
                 {"$set": {"date": date, "company_email": company_email, "status": status}},
                 upsert=True  # Create a new document if no document matches the query
             )
+            # Emit a dictionary of field names mapped to their values to the frontend
+            field_values = {
+                "company": company,
+                "date": date,
+                "role": role,
+                "user_email": user_email,
+                "company_email": company_email,
+                "status": status
+            }
+            socketio.emit('application_processed', field_values, room=request.sid)
+            #Success message back to the monitoring script.
             return jsonify({"message": "Application processed successfully"}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     else:
         return jsonify({"error": "Request must be JSON"}), 400
+
+@app.route('/last-search', methods=['POST'])
+#Put JWT required
+def get_last_search():
+    try:
+        # Get the email from the request payload
+        data = request.get_json()
+        user_email = data.get("email")
+        
+        if not user_email:
+            return jsonify({"error": "Email is required"}), 400
+        
+        # Fetch the user's document from the database
+        user = mongo.db.users.find_one({"email": user_email})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        # Retrieve the most recent search from the user's searches
+        searches = user.get("searches", [])
+        last_search = searches[0] if searches else {}
+        last_search["user_email"] = user_email
+        print(last_search)
+        return jsonify(last_search), 200
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 email_list = []  # Define global variable at top of file
         

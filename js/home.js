@@ -24,6 +24,42 @@ $(document).ready(function () {
   // Ensure the search overlay is hidden initially.
   $("#searchOverlay").hide();
 
+  // Application rendering logic
+  // Load the applications from the user's last search
+  // Make an api request to get the user's last search
+  $.ajax({
+    url: "http://127.0.0.1:8000/last-search",
+    type: "POST",
+    data: JSON.stringify({email: userEmail}),
+    contentType: "application/json",
+    dataType: "json",
+    success: function (response) {
+      // Pass that into filter applications 
+      // Make an API request to /filter (POST), passing in the search term (response.content or wtvr)
+      const payload = response;
+      console.log("Payload content:", JSON.stringify(payload));
+      $.ajax({
+        url: "http://127.0.0.1:8000/filter",
+        type: "POST",
+        data: JSON.stringify(payload),
+        contentType: "application/json",
+        dataType: "json",
+        success: function (filterResponse) {
+          // If successful, refresh the application grid.
+          refreshApplicationGrid(filterResponse["applications"]);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", status, error);
+          alert("Failed to filter applications based on last search. Please try again.");
+        },
+      });
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", status, error);
+      alert("Failed to load last search results. Please try again.");
+    },
+  });
+
   // When the search button is clicked, show the inline overlay.
   $("#searchButton").on("click", function (e) {
     anyField =
@@ -190,46 +226,74 @@ $(document).ready(function () {
 });
 
 function refreshApplicationGrid(data) {
-  $(".app-count").text(`Viewing ${data.length} applications`);
+  console.log(data);
+  if (data.length === 1){
+  $(".jobs-head").text(`Viewing ${data.length} application`);
+  } else{
+    $(".jobs-head").text(`Viewing ${data.length} applications`);
+  }
 
-  data.forEach((email, index) => {
-    Object.values(email).forEach((value, key) => {
-      const backgroundColor = index % 2 === 0 ? "#efefef" : "white";
-      const valueElement = $("<div></div>").text(value).css({
-        "background-color": backgroundColor,
-        padding: "8px",
+  // Clear the applications from the grid.
+  $(".application-grid .apps").empty();
+
+  data.forEach((application, index) => {
+    // Create a new application element with class company-role
+    const applicationElement = $("<div></div>")
+      .addClass(`${application.company} - ${application.role}`);
+
+    // Switch the background color every application.
+    const backgroundColor = index % 2 === 0 ? "#efefef" : "white";
+    applicationElement.css({
+      "background-color": backgroundColor,
+      "margin-bottom": "10px",
+      "border-radius": "5px",
+      "box-shadow": "0 2px 4px rgba(0, 0, 0, 0.1)",
+      "display": "flex"
+    });
+
+    //For each value
+    Object.entries(application).forEach(([key, value]) => {
+      // If key is id, then just move on
+      if (key === "_id" || key === "user_email") {
+        return;
+      }
+      const valueElement = $(`<div class = ${key}></div>`).text(value).css({
+      padding: "8px",
       });
 
-      // Special handling for status column (4th column, key === 3)
-      if (key === 3) {
-        valueElement.empty(); // Remove the direct text
-        const statusColor =
-          value === "rejected"
-            ? "#ff5252"
-            : value === "offer"
-            ? "#35ff35"
-            : value === "pending"
-            ? "rgb(255, 210, 31)"
-            : value === "interview"
-            ? "#6c6cf1"
-            : "white";
+      // Special handling for status column (key === "status")
+      if (key === "status") {
+      valueElement.empty(); // Remove the direct text
+      const statusColor =
+        value === "rejected"
+        ? "#ff5252"
+        : value === "offer"
+        ? "#35ff35"
+        : value === "pending"
+        ? "rgb(255, 210, 31)"
+        : value === "interview"
+        ? "#6c6cf1"
+        : "white";
 
-        const innerElement = $("<div></div>")
-          .text(value.charAt(0).toUpperCase() + value.slice(1))
-          .css({
-            "background-color": statusColor,
-            color: "white",
-            padding: "0.7rem 1.2rem",
-            "border-radius": "0.8rem",
-            display: "block",
-            "text-align": "center",
-          });
+      const innerElement = $("<div></div>")
+        .text(value.charAt(0).toUpperCase() + value.slice(1))
+        .css({
+        "background-color": statusColor,
+        color: "white",
+        padding: "0.7rem 1.2rem",
+        "border-radius": "0.8rem",
+        display: "block",
+        "text-align": "center",
+        });
 
-        valueElement.append(innerElement);
+      valueElement.append(innerElement);
       }
 
-      $(".application-grid").append(valueElement);
+      // Add the value element to the application element
+      applicationElement.append(valueElement);
     });
+    // Append the application element to the application grid
+    $(".application-grid").append(applicationElement);
   });
 }
 
@@ -247,47 +311,5 @@ function refreshApplicationGrid(data) {
         $(this).hide();
         $('.new-input-wrapper').slideDown();
     });
-
-    //For manually entering job applications
-    $('.confirm-btn').click(function() {
-        const [date, company, role, email] = $('.input-field').map((_, el) => $(el).val()).get(), status = $('.status-dropdown').val();
-
-        // Check if any field is missing
-        if (!date || !company || !role || !email || !status) {
-            $('.add-error').text('Please enter all required fields!').show(); // Show error if any field is missing
-            return; // Exit the function early
-        }
-
-        //Prepare the application document.
-        const payload = {
-            'user_email': userEmailElement.text(),
-            'company': company,
-            'role': role,
-            'date': date,
-            'company_email': email,
-            'status': status
-        };
-
-        //Send the POST request to manually add a new application.
-        $.ajax({
-            url: 'http://127.0.0.1:8000/jobstatuses',
-            type: 'POST',  // Explicitly set the method
-            data: JSON.stringify(payload),  // Convert payload to JSON string
-            contentType: 'application/json',  // Ensure JSON format
-            dataType: 'json',  // Expect JSON response
-            success: function(data) {
-                if (data.success) {
-                    alert('Application added successfully!');
-                    $('.new-input-wrapper').hide();
-                    $('.new-btn').show();
-                } else {
-                    alert('Failed to add application. Please try again.');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", status, error);
-                alert('Something went wrong: ' + xhr.responseText);
-            }
-        });
-    });
+  });
     */
