@@ -132,7 +132,33 @@ def filter_applications():
             query['role'] = {'$regex': data['role'], '$options': 'i'}
             search_term['role'] = data['role']
         if 'date' in data:
-            query['date'] = data['date']
+            date_filter = data['date']
+            if isinstance(date_filter, dict) and 'condition' in date_filter and 'value' in date_filter:
+                condition = date_filter['condition']
+                value = date_filter['value']
+                
+                # First convert the value for the date.
+                try:
+                    # Try ISO format (YYYY-MM-DD)
+                    date_value = datetime.strptime(value, '%Y-%m-%d')
+                except ValueError:
+                    try:
+                        # Try month/day/year format
+                        date_value = datetime.strptime(value, '%m/%d/%Y')
+                    except ValueError:
+                        # Handle invalid format
+                        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD or MM/DD/YYYY"}), 400
+                
+                if condition == 'greater':
+                    query['date'] = {'$gt': date_value}
+                elif condition == 'equal':
+                    query['date'] = date_value
+                elif condition == 'less':
+                    query['date'] = {'$lt': date_value}
+                print(query['date'])
+            else:
+                # Fallback for simpler date formats
+                query['date'] = date_filter
             search_term['date'] = data['date']
         if 'company' in data:
             query['company'] = {'$regex': data['company'], '$options': 'i'}
@@ -147,6 +173,7 @@ def filter_applications():
     try:
         # Fetch application results
         results = list(applications_collection.find(query))
+        print(results)
         #Convert each application's object id into a string.
         for result in results:
             result['_id'] = str(result['_id'])
@@ -214,6 +241,19 @@ def process_application():
         try:
             applications_collection = mongo.db.applications
             
+            # Convert date to a date-time object in Year-month-day format
+            if date:
+                try:
+                    # Try ISO format (YYYY-MM-DD)
+                    date = datetime.strptime(date, '%Y-%m-%d')
+                except ValueError:
+                    try:
+                        # Try month/day/year format
+                        date = datetime.strptime(date, '%m/%d/%Y')
+                    except ValueError:
+                        # Handle invalid format
+                        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD or MM/DD/YYYY"}), 400
+            
             #updates application status
             applications_collection.update_one(
                 {"user_email": user_email, "company": company, "role": role},
@@ -229,7 +269,7 @@ def process_application():
                 "company_email": company_email,
                 "status": status
             }
-            socketio.emit('application_processed', field_values, room=request.sid)
+            #socketio.emit('application_processed', field_values, room=request.sid)
             #Success message back to the monitoring script.
             return jsonify({"message": "Application processed successfully"}), 200
         except Exception as e:

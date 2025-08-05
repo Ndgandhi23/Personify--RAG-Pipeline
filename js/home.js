@@ -76,7 +76,7 @@ $(document).ready(function () {
       if ($(".date-field").length > 0) {
         const dateCondition = $(".date-field select").val(); // Get the selected condition (e.g., "greater", "equal", "less")
         const dateValue = $(".date-field input[type='date']").val(); // Get the entered date value
-        payload["date_cond"] = { condition: dateCondition, value: dateValue };
+        payload["date"] = { condition: dateCondition, value: dateValue };
       }
       if ($(".company-field").length > 0) {
         payload["company"] = $(".company-field input").val();
@@ -91,6 +91,9 @@ $(document).ready(function () {
         payload["role"] = role;
       }
 
+      //Populate the user email in the payload.
+      payload["user_email"] = userEmail;
+
       //Make a POST request to the /filter endpoint
       $.ajax({
         url: "http://127.0.0.1:8000/filter",
@@ -100,7 +103,7 @@ $(document).ready(function () {
         dataType: "json",
         success: function (response) {
           // Handle the response and refresh the application grid
-          refreshApplicationGrid(response.data);
+          refreshApplicationGrid(response["applications"]);
         },
         error: function (xhr, status, error) {
           console.error("Error:", status, error);
@@ -235,6 +238,7 @@ function refreshApplicationGrid(data) {
 
   // Clear the applications from the grid.
   $(".application-grid .apps").empty();
+  console.log($(".application-grid .apps").length);
 
   data.forEach((application, index) => {
     // Create a new application element with class company-role
@@ -261,19 +265,18 @@ function refreshApplicationGrid(data) {
       padding: "8px",
       });
 
+      // Make date format back to M/d/y for the date value (if key === "date")
+      if (key === "date") {
+        const date = new Date(application[key]["$date"]);
+        console.log(date);
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+        valueElement.text(formattedDate);
+      }
+
       // Special handling for status column (key === "status")
       if (key === "status") {
       valueElement.empty(); // Remove the direct text
-      const statusColor =
-        value === "rejected"
-        ? "#ff5252"
-        : value === "offer"
-        ? "#35ff35"
-        : value === "pending"
-        ? "rgb(255, 210, 31)"
-        : value === "interview"
-        ? "#6c6cf1"
-        : "white";
+      const statusColor = { rejected: "#ff5252", offer: "#35ff35", pending: "rgb(255, 210, 31)", interview: "#6c6cf1" }[value] || "white";
 
       const innerElement = $("<div></div>")
         .text(value.charAt(0).toUpperCase() + value.slice(1))
@@ -293,7 +296,7 @@ function refreshApplicationGrid(data) {
       applicationElement.append(valueElement);
     });
     // Append the application element to the application grid
-    $(".application-grid").append(applicationElement);
+    $(".application-grid .apps").append(applicationElement);
   });
 }
 

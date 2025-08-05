@@ -1,4 +1,5 @@
 backend_api/__pycache__
 venv
 requirements.txt
+backend_api/.env
 .DS_Store
